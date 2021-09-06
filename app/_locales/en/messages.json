@@ -1,0 +1,18 @@
+{
+  "appName": {
+    "message": "Yet Another Notifier for Gerrit",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "yang",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "Receive update notifications from Gerrit change-ids.",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "Yet Another Notifier for Gerrit",
+    "description": "The title of the browser action button"
+  }
+}

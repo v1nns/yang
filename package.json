@@ -1,0 +1,18 @@
+{
+  "name": "yet-another-notifier-for-gerrit",
+  "version": "0.0.1",
+  "description": "Receive update notifications from Gerrit change-ids.",
+  "scripts": {
+    "dev": "webextension-toolbox dev",
+    "build": "webextension-toolbox build"
+  },
+  "devDependencies": {
+    "webextension-toolbox": "^4.0.3"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
