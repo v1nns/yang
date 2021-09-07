@@ -1,0 +1,7 @@
+.rdt_TableBody {
+  /* this is not good, but didn't find another way to set a static fixed height
+  for table body, specially when it has only a single chid entry */
+  height: 155px;
+  display: flex;
+  flex-direction: column;
+}

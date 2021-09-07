@@ -13,6 +13,16 @@ import Edit from "@material-ui/icons/EditTwoTone";
 import Delete from "@material-ui/icons/DeleteTwoTone";
 import Info from "@material-ui/icons/InfoTwoTone";
 
+import CustomTablePagination from "../popup/tablePagination";
+
+import mockChanges from "../popup/mockData";
+
+const title = (
+  <Typography variant="overline" style={{ fontSize: 14, fontWeight: 600 }}>
+    changes
+  </Typography>
+);
+
 const emptyData = (
   <Grid
     container
@@ -60,37 +70,28 @@ const contextActions = (deleteHandler) => (
   </IconButton>
 );
 
+const columnTitleStyle = (title) => (
+  <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
+    {title}
+  </Typography>
+);
+
 const columns = [
   {
-    name: "Change-Id",
-    selector: (row) => row.changeId,
+    name: columnTitleStyle("Change-Id"),
+    selector: (row) => row.id,
   },
   {
-    name: "Code-Review",
+    name: columnTitleStyle("Code-Review"),
     selector: (row) => row.codeReview,
     right: true,
   },
   {
-    name: "Verified",
+    name: columnTitleStyle("Verified"),
     selector: (row) => row.verified,
     right: true,
   },
 ];
-
-// const tableDataItems = [
-//   {
-//     changeId: 1234567,
-//     codeReview: 1,
-//     verified: -2,
-//   },
-//   {
-//     changeId: 7894513,
-//     codeReview: -2,
-//     verified: 1,
-//   },
-// ];
-
-const tableDataItems = [];
 
 export default function ChidTable() {
   const [toggleSelectable, setToggleSelectable] = React.useState(false);
@@ -98,7 +99,7 @@ export default function ChidTable() {
 
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  const [data, setData] = React.useState(tableDataItems);
+  const [data, setData] = React.useState(mockChanges);
 
   const handleRowSelected = React.useCallback((state) => {
     setSelectedRows(state.selectedRows);
@@ -124,9 +125,9 @@ export default function ChidTable() {
   };
 
   return (
-    <Card style={{ marginTop: 10, height: "100%" }}>
+    <Card variant="outlined" style={{ marginTop: 10, height: "100%" }}>
       <DataTable
-        title="changes"
+        title={title}
         columns={columns}
         data={data}
         noDataComponent={emptyData}
@@ -136,8 +137,10 @@ export default function ChidTable() {
         onSelectedRowsChange={handleRowSelected}
         clearSelectedRows={toggleCleared}
         dense
-        responsive
         highlightOnHover
+        pagination
+        paginationPerPage={5}
+        paginationComponent={CustomTablePagination}
       />
     </Card>
   );

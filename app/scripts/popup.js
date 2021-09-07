@@ -10,7 +10,7 @@ export default function Popup() {
   return (
     <div>
       <AppBar />
-      <Divider variant="fullWidth" style={{ margin: "5px" }} />
+      <Divider variant="fullWidth" style={{ marginTop: 5 }} />
       <ChidTable />
     </div>
   );
