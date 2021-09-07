@@ -1,59 +1,144 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import differenceBy from "lodash/differenceBy";
 
+import Card from "@material-ui/core/Card";
+import DataTable from "react-data-table-component";
+import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
+import Tooltip from "@material-ui/core/Tooltip";
+import Typography from "@material-ui/core/Typography";
 
-const useStyles = makeStyles({
-  table: {
-    width: "98%",
-    margin: "auto",
+import Add from "@material-ui/icons/AddTwoTone";
+import Edit from "@material-ui/icons/EditTwoTone";
+import Delete from "@material-ui/icons/DeleteTwoTone";
+import Info from "@material-ui/icons/InfoTwoTone";
+
+const emptyData = (
+  <Grid
+    container
+    direction="column"
+    justifyContent="center"
+    alignItems="center"
+  >
+    <Grid item xs>
+      <Grid container justifyContent="flex-end" alignItems="center" spacing={1}>
+        <Grid item>
+          <Info color="primary" />
+        </Grid>
+        <Grid item>
+          <Typography variant="subtitle2">Empty data</Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item>
+      <Typography variant="caption">
+        Add a Change-Id and it will show up here.
+      </Typography>
+    </Grid>
+  </Grid>
+);
+
+const actions = (addHandler, editHandler) => (
+  <div>
+    <Tooltip title="Add Change-Id">
+      <IconButton color="primary" size="small" onClick={addHandler}>
+        <Add />
+      </IconButton>
+    </Tooltip>
+    <Tooltip title="Toggle selection">
+      <IconButton color="primary" size="small" onClick={editHandler}>
+        <Edit />
+      </IconButton>
+    </Tooltip>
+  </div>
+);
+
+const contextActions = (deleteHandler) => (
+  // TODO: add cancel button for toggling selection mode
+  <IconButton color="secondary" onClick={deleteHandler}>
+    <Delete />
+  </IconButton>
+);
+
+const columns = [
+  {
+    name: "Change-Id",
+    selector: (row) => row.changeId,
   },
-});
+  {
+    name: "Code-Review",
+    selector: (row) => row.codeReview,
+    right: true,
+  },
+  {
+    name: "Verified",
+    selector: (row) => row.verified,
+    right: true,
+  },
+];
 
-function createData(chid, codeReview, verified) {
-  return { chid, codeReview, verified };
-}
+// const tableDataItems = [
+//   {
+//     changeId: 1234567,
+//     codeReview: 1,
+//     verified: -2,
+//   },
+//   {
+//     changeId: 7894513,
+//     codeReview: -2,
+//     verified: 1,
+//   },
+// ];
 
-const rows = [createData(159123, -1, +1), createData(123451, -1, +1)];
+const tableDataItems = [];
 
-export default function DenseTable() {
-  const classes = useStyles();
+export default function ChidTable() {
+  const [toggleSelectable, setToggleSelectable] = React.useState(false);
+  const [toggleCleared, setToggleCleared] = React.useState(false);
+
+  const [selectedRows, setSelectedRows] = React.useState([]);
+
+  const [data, setData] = React.useState(tableDataItems);
+
+  const handleRowSelected = React.useCallback((state) => {
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const addMode = () => {
+    console.log("uhul");
+  };
+
+  const editMode = () => {
+    setToggleSelectable(!toggleSelectable);
+  };
+
+  const deleteAll = () => {
+    const rows = selectedRows.map((r) => r.changeId);
+    // eslint-disable-next-line no-alert
+    if (
+      window.confirm(`Are you sure you want to delete these entries?\r ${rows}`)
+    ) {
+      setToggleCleared(!toggleCleared);
+      setData(differenceBy(data, selectedRows, "changeId"));
+    }
+  };
 
   return (
-    <TableContainer>
-      <Table className={classes.table} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Change-Id</TableCell>
-            <TableCell align="right">Code-Review</TableCell>
-            <TableCell align="right">Verified</TableCell>
-            <TableCell align="right"></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.chid}>
-              <TableCell component="th" scope="row">
-                {row.chid}
-              </TableCell>
-              <TableCell align="right">{row.codeReview}</TableCell>
-              <TableCell align="right">{row.verified}</TableCell>
-              <TableCell align="right">
-                <IconButton size="small">
-                  <DeleteIcon fontSize="inherit"/>
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Card style={{ marginTop: 10, height: "100%" }}>
+      <DataTable
+        title="changes"
+        columns={columns}
+        data={data}
+        noDataComponent={emptyData}
+        actions={actions(addMode, editMode)}
+        contextActions={contextActions(deleteAll)}
+        selectableRows={toggleSelectable}
+        onSelectedRowsChange={handleRowSelected}
+        clearSelectedRows={toggleCleared}
+        dense
+        responsive
+        highlightOnHover
+      />
+    </Card>
   );
 }

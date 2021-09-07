@@ -12,7 +12,9 @@
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
+    "react-data-table-component": "^7.0.0",
     "react-dom": "^17.0.2"
   }
 }

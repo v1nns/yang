@@ -5,8 +5,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
-import DarkModeIcon from "@material-ui/icons/Brightness4";
-import SettingsIcon from "@material-ui/icons/Settings";
+import DarkMode from "@material-ui/icons/Brightness4TwoTone";
+import Settings from "@material-ui/icons/SettingsTwoTone";
 
 export default function AppBar() {
   return (
@@ -16,13 +16,13 @@ export default function AppBar() {
       </Grid>
       <Grid item>
         <Tooltip title="Settings">
-          <IconButton aria-label="settings" size="small">
-            <SettingsIcon />
+          <IconButton aria-label="settings" size="small" color="primary">
+            <Settings fontSize="small" />
           </IconButton>
         </Tooltip>
         <Tooltip title="Dark Mode">
-          <IconButton aria-label="darkmode" size="small">
-            <DarkModeIcon />
+          <IconButton aria-label="darkmode" size="small" color="primary">
+            <DarkMode fontSize="small" />
           </IconButton>
         </Tooltip>
       </Grid>
