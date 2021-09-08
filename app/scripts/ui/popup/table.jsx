@@ -32,6 +32,7 @@ const title = (
   </Typography>
 );
 
+// TODO: fill empty popup page
 const emptyData = (
   <Grid
     container
@@ -94,15 +95,24 @@ const columnTitle = (title) => (
   </Typography>
 );
 
-const EditableCell = ({ row, index, column, col, onChange }) => {
+const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
+  const [name, setName] = useState("");
   const [value, setValue] = useState(column.selector(row));
 
-  const handleOnChange = (e) => {
+  const handleChange = (e) => {
     // remove leading zero and dot from input value
-    const name = e.target.name;
-    const value = String(e.target.value).replace(/\D|^0+/, "");
-    setValue(value);
-    onChange?.(name, value);
+    const nam = e.target.name;
+    const val = String(e.target.value).replace(/\D|^0+/, "");
+    setName(nam);
+    setValue(val);
+    onChange?.(nam, val);
+  };
+
+  const handleKeyDown = (e) => {
+    // Accept key 'Enter' to finish edit
+    if (e.key === "Enter") {
+      onKeyDown?.({ id: name });
+    }
   };
 
   if (column?.editing) {
@@ -111,8 +121,10 @@ const EditableCell = ({ row, index, column, col, onChange }) => {
         type={typeof column.selector(row) || "text"}
         name={column.selector(row)}
         style={{ width: "100%" }}
-        onChange={handleOnChange}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
         value={value}
+        autoFocus
       />
     );
   }
@@ -136,6 +148,7 @@ const columns = [
   {
     name: columnTitle("Code-Review"),
     selector: (row) => row.codeReview,
+    minWidth: "115px", // necessary, otherwise text will cut it off on add mode
     right: true,
   },
   {
@@ -171,7 +184,7 @@ function ChidTable() {
 
   const addMode = () => {
     if (editingId === "" && !toggleSelection) {
-      const element = { id: 0, codeReview: 0, verified: 0 };
+      const element = { id: 0, codeReview: null, verified: null };
       setEditingId(0);
       setToggleResetPagination(!toggleResetPagination);
       setData([element, ...data]);
@@ -192,6 +205,7 @@ function ChidTable() {
         // TODO: maybe show some notification
         data.shift();
       } else {
+        // TODO: check if newValue is a valid number
         data[0].id = newValue;
       }
     }
@@ -210,7 +224,9 @@ function ChidTable() {
   /* ---------------------- Handlers for selection mode --------------------- */
 
   const selectMode = () => {
-    setToggleSelection(!toggleSelection);
+    if (data.length > 0) {
+      setToggleSelection(!toggleSelection);
+    }
   };
 
   const handleRowSelected = useCallback((state) => {
@@ -241,7 +257,7 @@ function ChidTable() {
     const rowActions = [
       {
         name: columnTitle("Actions"),
-        allowOverflow: false,
+        allowOverflow: true,
         width: "80px",
         cell: (row) => {
           const editable = isEditing(row);
@@ -282,6 +298,7 @@ function ChidTable() {
                 column={{ ...column, editing }}
                 col={col}
                 onChange={formOnChange}
+                onKeyDown={save}
               />
             );
           },
@@ -293,7 +310,7 @@ function ChidTable() {
   const disableButtons = editingId === 0 && !toggleSelection;
 
   return (
-    <Card variant="outlined" style={{ marginTop: 10, height: "100%" }}>
+    <Card variant="outlined" style={{ marginTop: 10,  height: "85%" }}>
       <DataTable
         title={title}
         columns={createColumns}

@@ -8,7 +8,7 @@ import ChidTable from "../scripts/ui/popup/table";
 
 export default function Popup() {
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <AppBar />
       <Divider variant="fullWidth" style={{ marginTop: 5 }} />
       <ChidTable />

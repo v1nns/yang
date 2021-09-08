@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import TablePagination from "@material-ui/core/TablePagination";
 import IconButton from "@material-ui/core/IconButton";
@@ -6,13 +6,7 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
 function TablePaginationActions(props) {
-  const {
-    count,
-    page,
-    rowsPerPage,
-    onPageChange,
-    disableButtons,
-  } = props;
+  const { count, page, rowsPerPage, onPageChange, disableButtons } = props;
 
   // RDT uses page index starting at 1, MUI starts at 0
   // i.e. page prop will be off by one here
@@ -49,7 +43,7 @@ TablePaginationActions.propTypes = {
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
-  disableButtons: PropTypes.bool.isRequired
+  disableButtons: PropTypes.bool.isRequired,
 };
 
 const CustomMaterialPagination = ({
@@ -58,7 +52,7 @@ const CustomMaterialPagination = ({
   onChangePage,
   onChangeRowsPerPage,
   currentPage,
-  disableButtons
+  disableButtons,
 }) => (
   <TablePagination
     component="nav"
