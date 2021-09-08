@@ -57,15 +57,25 @@ const emptyData = (
   </Grid>
 );
 
-const actions = (addHandler, editHandler) => (
+const actions = (disableButtons, addHandler, selectionHandler) => (
   <div>
     <Tooltip title="Add Change-Id">
-      <IconButton color="primary" size="small" onClick={addHandler}>
+      <IconButton
+        color="primary"
+        size="small"
+        onClick={addHandler}
+        disabled={disableButtons}
+      >
         <Add />
       </IconButton>
     </Tooltip>
     <Tooltip title="Toggle selection">
-      <IconButton color="primary" size="small" onClick={editHandler}>
+      <IconButton
+        color="primary"
+        size="small"
+        onClick={selectionHandler}
+        disabled={disableButtons}
+      >
         <Edit />
       </IconButton>
     </Tooltip>
@@ -140,37 +150,36 @@ const columns = [
 /* -------------------------------------------------------------------------- */
 
 function ChidTable() {
-  const [paginationPage] = useState(5);
+  // Constants
+  const [maxEntriesPerPage] = useState(5);
 
-  const [state, setState] = useState({
-    editingId: "",
-    toggleSelection: false,
-    toggleCleared: false,
-  });
-
+  // TODO: use change-id data from props
   const [data, setData] = useState(mockChanges);
+
+  // Add mode
+  const [editingId, setEditingId] = useState("");
+
+  // Selection mode
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  /* ------------------------------------------------------------------------ */
-  /*                           Handlers for add mode                          */
-  /* ------------------------------------------------------------------------ */
+  // Toggle stuff to update UI
+  const [toggleSelection, setToggleSelection] = useState(false);
+  const [toggleCleared, setToggleCleared] = useState(false);
+  const [toggleResetPagination, setToggleResetPagination] = useState(false);
+
+  /* ------------------------- Handlers for add mode ------------------------ */
 
   const addMode = () => {
-    if (state.editingId === "" && !state.toggleSelection) {
+    if (editingId === "" && !toggleSelection) {
       const element = { id: 0, codeReview: 0, verified: 0 };
-      setState({
-        ...state,
-        editingId: 0,
-      });
+      setEditingId(0);
+      setToggleResetPagination(!toggleResetPagination);
       setData([element, ...data]);
     }
   };
 
   const save = (item) => {
-    setState({
-      ...state,
-      editingId: "",
-    });
+    setEditingId("");
 
     const newValue = formData[item.id];
     if (newValue == undefined) {
@@ -191,24 +200,17 @@ function ChidTable() {
   };
 
   const cancel = () => {
-    setState({
-      ...state,
-      editingId: "",
-    });
+    setEditingId("");
 
-    // remove first entry (with id == 0)
+    // remove first entry, which contains id = 0
     data.shift();
     setData([...data]);
   };
 
-  /* ------------------------------------------------------------------------ */
-  /*                        Handlers for selection mode                       */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------- Handlers for selection mode --------------------- */
 
   const selectMode = () => {
-    if (state.editingId != "") {
-      setState({ ...state, toggleSelection: !state.toggleSelection });
-    }
+    setToggleSelection(!toggleSelection);
   };
 
   const handleRowSelected = useCallback((state) => {
@@ -216,24 +218,14 @@ function ChidTable() {
   }, []);
 
   const deleteAll = () => {
-    const rows = selectedRows.map((r) => r.id);
-    // eslint-disable-next-line no-alert
-    if (
-      window.confirm(`Are you sure you want to delete these entries?\r ${rows}`)
-    ) {
-      setState({
-        ...state,
-        toggleCleared: !state.toggleCleared,
-      });
-      setData(differenceBy(data, selectedRows, "id"));
-    }
+    setToggleSelection(!toggleSelection);
+    setToggleCleared(!toggleCleared);
+    setData(differenceBy(data, selectedRows, "id"));
   };
 
-  /* ------------------------------------------------------------------------ */
-  /*            create handler to update input field on change events         */
-  /* ------------------------------------------------------------------------ */
+  /* --------- create handler to update input field on change events -------- */
 
-  const isEditing = (record) => record.id === state.editingId;
+  const isEditing = (record) => record.id === editingId;
   let formData = useRef({}).current;
 
   const formOnChange = (nam, val) => {
@@ -243,9 +235,7 @@ function ChidTable() {
     };
   };
 
-  /* ------------------------------------------------------------------------ */
-  /*         create actions and input field for 'editable' column/row         */
-  /* ------------------------------------------------------------------------ */
+  /* ---------- create actions and input field for 'editable' cell ---------- */
 
   const createColumns = useMemo(() => {
     const rowActions = [
@@ -276,7 +266,7 @@ function ChidTable() {
     ];
 
     return [
-      ...(state.editingId !== "" ? rowActions : []),
+      ...(editingId !== "" ? rowActions : []),
       ...columns.map((col) => {
         if (!col.editable) {
           return col;
@@ -298,9 +288,9 @@ function ChidTable() {
         };
       }),
     ];
-  }, [data, state.editingId]);
+  }, [data, editingId]);
 
-  const { toggleSelection, toggleCleared } = state;
+  const disableButtons = editingId === 0 && !toggleSelection;
 
   return (
     <Card variant="outlined" style={{ marginTop: 10, height: "100%" }}>
@@ -309,7 +299,7 @@ function ChidTable() {
         columns={createColumns}
         data={data}
         noDataComponent={emptyData}
-        actions={actions(addMode, selectMode)}
+        actions={actions(disableButtons, addMode, selectMode)}
         contextActions={contextActions(deleteAll)}
         selectableRows={toggleSelection}
         clearSelectedRows={toggleCleared}
@@ -317,8 +307,11 @@ function ChidTable() {
         dense
         highlightOnHover
         pagination
-        paginationPerPage={paginationPage}
-        paginationComponent={CustomTablePagination}
+        paginationResetDefaultPage={toggleResetPagination}
+        paginationPerPage={maxEntriesPerPage}
+        paginationComponent={(props) =>
+          CustomTablePagination({ ...props, disableButtons })
+        }
       />
     </Card>
   );

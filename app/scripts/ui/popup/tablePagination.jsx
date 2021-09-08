@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import TablePagination from "@material-ui/core/TablePagination";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
-function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
+function TablePaginationActions(props) {
+  const {
+    count,
+    page,
+    rowsPerPage,
+    onPageChange,
+    disableButtons,
+  } = props;
+
   // RDT uses page index starting at 1, MUI starts at 0
   // i.e. page prop will be off by one here
   const handleBackButtonClick = () => {
@@ -19,14 +28,14 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
     <>
       <IconButton
         onClick={handleBackButtonClick}
-        disabled={page === 0}
+        disabled={page === 0 || disableButtons}
         aria-label="previous page"
       >
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1 || disableButtons}
         aria-label="next page"
       >
         <KeyboardArrowRight />
@@ -35,12 +44,21 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
   );
 }
 
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  disableButtons: PropTypes.bool.isRequired
+};
+
 const CustomMaterialPagination = ({
   rowsPerPage,
   rowCount,
   onChangePage,
   onChangeRowsPerPage,
   currentPage,
+  disableButtons
 }) => (
   <TablePagination
     component="nav"
@@ -52,7 +70,9 @@ const CustomMaterialPagination = ({
     onRowsPerPageChange={({ target }) =>
       onChangeRowsPerPage(Number(target.value))
     }
-    ActionsComponent={TablePaginationActions}
+    ActionsComponent={(props) =>
+      TablePaginationActions({ ...props, disableButtons })
+    }
   />
 );
 
