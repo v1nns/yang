@@ -5,3 +5,9 @@
   display: flex;
   flex-direction: column;
 }
+
+/* remove arrow buttons from input number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
