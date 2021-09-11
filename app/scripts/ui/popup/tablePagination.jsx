@@ -53,21 +53,30 @@ const CustomMaterialPagination = ({
   onChangeRowsPerPage,
   currentPage,
   disableButtons,
-}) => (
-  <TablePagination
-    component="nav"
-    count={rowCount}
-    rowsPerPage={rowsPerPage}
-    rowsPerPageOptions={[]}
-    page={currentPage - 1}
-    onPageChange={onChangePage}
-    onRowsPerPageChange={({ target }) =>
-      onChangeRowsPerPage(Number(target.value))
-    }
-    ActionsComponent={(props) =>
-      TablePaginationActions({ ...props, disableButtons })
-    }
-  />
-);
+}) => {
+  // disable text selection
+  const defaultStyle = { "user-select": "none" };
+  const style = disableButtons
+    ? { ...defaultStyle, color: "rgba(0,0,0,.26)" }
+    : defaultStyle;
+
+  return (
+    <TablePagination
+      component="div"
+      count={rowCount}
+      rowsPerPage={rowsPerPage}
+      rowsPerPageOptions={[]}
+      page={currentPage - 1}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={({ target }) =>
+        onChangeRowsPerPage(Number(target.value))
+      }
+      ActionsComponent={(props) =>
+        TablePaginationActions({ ...props, disableButtons })
+      }
+      style={style}
+    />
+  );
+};
 
 export default CustomMaterialPagination;

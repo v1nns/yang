@@ -9,6 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
+import Fade from "@material-ui/core/Fade";
+
 // Icons
 import Add from "@material-ui/icons/AddTwoTone";
 import Edit from "@material-ui/icons/EditTwoTone";
@@ -23,6 +25,21 @@ import CustomTablePagination from "../popup/tablePagination";
 import mockChanges from "../popup/mockData";
 
 /* -------------------------------------------------------------------------- */
+/*                                Custom styles                               */
+/* -------------------------------------------------------------------------- */
+
+//  Internally, this will deep merges with the default styling.
+const customStyles = {
+  rows: {
+    style: {
+      borderBottomStyle: "solid",
+      borderBottomWidth: "1px",
+      borderBottomColor: "rgba(0,0,0,.12)",
+    },
+  },
+};
+
+/* -------------------------------------------------------------------------- */
 /*                         Custom components for table                        */
 /* -------------------------------------------------------------------------- */
 
@@ -32,13 +49,13 @@ const title = (
   </Typography>
 );
 
-// TODO: fill empty popup page
 const emptyData = (
   <Grid
     container
     direction="column"
     justifyContent="center"
     alignItems="center"
+    alignContent="center"
   >
     <Grid item xs>
       <Grid container justifyContent="flex-end" alignItems="center" spacing={1}>
@@ -117,15 +134,17 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
 
   if (column?.editing) {
     return (
-      <input
-        type={typeof column.selector(row) || "text"}
-        name={column.selector(row)}
-        style={{ width: "100%" }}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        value={value}
-        autoFocus
-      />
+      <Fade in={true} timeout={900}>
+        <input
+          type={typeof column.selector(row) || "text"}
+          name={column.selector(row)}
+          style={{ width: "100%" }}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          value={value}
+          autoFocus
+        />
+      </Fade>
     );
   }
 
@@ -144,17 +163,21 @@ const columns = [
     name: columnTitle("Change-Id"),
     selector: (row) => row.id,
     editable: true,
+    reorder: false,
   },
   {
     name: columnTitle("Code-Review"),
     selector: (row) => row.codeReview,
     minWidth: "115px", // necessary, otherwise text will cut it off on add mode
+    compact: true,
     right: true,
+    style: { "user-select": "none", draggable: false },
   },
   {
     name: columnTitle("Verified"),
     selector: (row) => row.verified,
     right: true,
+    style: { "user-select": "none", draggable: false },
   },
 ];
 
@@ -263,18 +286,20 @@ function ChidTable() {
           const editable = isEditing(row);
           if (editable) {
             return (
-              <div style={{ width: "100%" }}>
-                <IconButton
-                  color="primary"
-                  size="small"
-                  onClick={() => save(row)}
-                >
-                  <Done fontSize="inherit" />
-                </IconButton>
-                <IconButton color="secondary" size="small" onClick={cancel}>
-                  <Clear fontSize="inherit" />
-                </IconButton>
-              </div>
+              <Fade in={true} timeout={900}>
+                <div style={{ width: "100%" }}>
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={() => save(row)}
+                  >
+                    <Done fontSize="inherit" />
+                  </IconButton>
+                  <IconButton color="secondary" size="small" onClick={cancel}>
+                    <Clear fontSize="inherit" />
+                  </IconButton>
+                </div>
+              </Fade>
             );
           }
         },
@@ -310,7 +335,7 @@ function ChidTable() {
   const disableButtons = editingId === 0 && !toggleSelection;
 
   return (
-    <Card variant="outlined" style={{ marginTop: 10,  height: "85%" }}>
+    <Card variant="outlined" style={{ height: "300px" }}>
       <DataTable
         title={title}
         columns={createColumns}
@@ -329,6 +354,7 @@ function ChidTable() {
         paginationComponent={(props) =>
           CustomTablePagination({ ...props, disableButtons })
         }
+        customStyles={customStyles}
       />
     </Card>
   );

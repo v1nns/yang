@@ -1,11 +1,22 @@
 .rdt_Table {
   /* this is not good, but didn't find another way to set a static fixed height
   for table body, specially when it has only a single chid entry */
-  height: 200px !important;
+  height: 193px !important;
 }
 
 /* remove arrow buttons from input number */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+}
+
+/* block text selection */
+.MuiTypography-h6,
+.rdt_TableHeader {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, supported by Chrome, Edge, Opera and Firefox */
 }
