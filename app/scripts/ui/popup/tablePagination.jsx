@@ -55,7 +55,7 @@ const CustomMaterialPagination = ({
   disableButtons,
 }) => {
   // disable text selection
-  const defaultStyle = { "user-select": "none" };
+  const defaultStyle = { userSelect: "none" };
   const style = disableButtons
     ? { ...defaultStyle, color: "rgba(0,0,0,.26)" }
     : defaultStyle;
