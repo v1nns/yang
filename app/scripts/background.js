@@ -1,23 +1,38 @@
-browser.runtime.onInstalled.addListener((details) => {
-  console.log("previousVersion", details.previousVersion);
-});
+import API from "../scripts/api";
+import mockChanges from "../scripts/background/mockData";
 
-browser.browserAction.setBadgeText({
-  text: `3`,
-});
+// browser.runtime.onInstalled.addListener((details) => {
+//   console.log("previousVersion", details.previousVersion);
+// });
 
-browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  // if( request.greeting === "GetURL" )
-  // {
-  //     var tabURL = "Not set yet";
-  //     chrome.tabs.query({active:true},function(tabs){
-  //         if(tabs.length === 0) {
-  //             sendResponse({});
-  //             return;
-  //         }
-  //         tabURL = tabs[0].url;
-  //         sendResponse( {navURL:tabURL} );
-  //     });
-  // }
-  console.log("uhul");
-});
+// browser.browserAction.setBadgeText({
+//   text: `3`,
+// });
+
+/* -------------------------------------------------------------------------- */
+/*                               Message Handler                              */
+/* -------------------------------------------------------------------------- */
+
+function handleMessage(request, sender, sendResponse) {
+  console.log(`background received a message: ${request.type}`);
+  switch (request.type) {
+    case API.GET_DATA:
+      return getChanges();
+  }
+  return false;
+}
+
+browser.runtime.onMessage.addListener(handleMessage);
+
+/* ------------------------ Get Changes from Storage ------------------------ */
+
+function getChanges() {
+  // TODO: get from storage
+  return Promise.resolve({ response: mockChanges });
+}
+
+// TODO: remove, it was only for testing purpose
+var dummy = setInterval(function () {
+  browser.extension.sendMessage({ type: API.UPDATE_DATA, data: "hahahaha" });
+  clearInterval(dummy);
+}, 4000);

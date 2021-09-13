@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import DarkMode from "@material-ui/icons/Brightness4TwoTone";
 import Settings from "@material-ui/icons/SettingsTwoTone";
 
-export default function AppBar() {
+function AppBar() {
   return (
     <Grid container alignItems="center">
       <Grid item xs>
@@ -29,3 +29,5 @@ export default function AppBar() {
     </Grid>
   );
 }
+
+export default AppBar;

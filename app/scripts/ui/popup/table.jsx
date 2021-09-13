@@ -1,15 +1,23 @@
-import React, { useCallback, useRef, useState, useMemo } from "react";
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import differenceBy from "lodash/differenceBy";
 
 // Components
 import Card from "@material-ui/core/Card";
-import DataTable from "react-data-table-component";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
+import TablePagination from "@material-ui/core/TablePagination";
 
 import Fade from "@material-ui/core/Fade";
+
+import DataTable from "react-data-table-component";
 
 // Icons
 import Add from "@material-ui/icons/AddTwoTone";
@@ -20,15 +28,14 @@ import Info from "@material-ui/icons/InfoTwoTone";
 import Done from "@material-ui/icons/DoneTwoTone";
 import Clear from "@material-ui/icons/ClearTwoTone";
 
-import CustomTablePagination from "../popup/tablePagination";
-
-import mockChanges from "../popup/mockData";
+import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
+import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
 /* -------------------------------------------------------------------------- */
 /*                                Custom styles                               */
 /* -------------------------------------------------------------------------- */
 
-//  Internally, this will deep merges with the default styling.
+//  Internally, this will deep merges with the default styling
 const customStyles = {
   rows: {
     style: {
@@ -43,13 +50,23 @@ const customStyles = {
 /*                         Custom components for table                        */
 /* -------------------------------------------------------------------------- */
 
-const title = (
+const Title = (
   <Typography variant="overline" style={{ fontSize: 14, fontWeight: 600 }}>
     changes
   </Typography>
 );
 
-const emptyData = (
+/* -------------------------------------------------------------------------- */
+
+const ColumnTitle = (title) => (
+  <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
+    {title}
+  </Typography>
+);
+
+/* -------------------------------------------------------------------------- */
+
+const EmptyData = (
   <Grid
     container
     direction="column"
@@ -75,7 +92,9 @@ const emptyData = (
   </Grid>
 );
 
-const actions = (disableButtons, addHandler, selectionHandler) => (
+/* -------------------------------------------------------------------------- */
+
+const Actions = (disableButtons, addHandler, selectionHandler) => (
   <div>
     <Tooltip title="Add Change-Id">
       <IconButton
@@ -100,17 +119,15 @@ const actions = (disableButtons, addHandler, selectionHandler) => (
   </div>
 );
 
-const contextActions = (deleteHandler) => (
+/* -------------------------------------------------------------------------- */
+
+const ContextActions = (deleteHandler) => (
   <IconButton color="secondary" onClick={deleteHandler}>
     <Delete />
   </IconButton>
 );
 
-const columnTitle = (title) => (
-  <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
-    {title}
-  </Typography>
-);
+/* -------------------------------------------------------------------------- */
 
 const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
   const [name, setName] = useState("");
@@ -155,18 +172,88 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
 };
 
 /* -------------------------------------------------------------------------- */
+
+const TablePaginationActions = (props) => {
+  const { count, page, rowsPerPage, onPageChange, disableButtons } = props;
+
+  // RDT uses page index starting at 1, MUI starts at 0
+  // i.e. page prop will be off by one here
+  const handleBackButtonClick = () => {
+    onPageChange(page);
+  };
+
+  const handleNextButtonClick = () => {
+    onPageChange(page + 2);
+  };
+
+  return (
+    <>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0 || disableButtons}
+        aria-label="previous page"
+      >
+        <KeyboardArrowLeft />
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1 || disableButtons}
+        aria-label="next page"
+      >
+        <KeyboardArrowRight />
+      </IconButton>
+    </>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+
+const CustomTablePagination = ({
+  rowsPerPage,
+  rowCount,
+  onChangePage,
+  onChangeRowsPerPage,
+  currentPage,
+  disableButtons,
+}) => {
+  // disable text selection
+  const defaultStyle = { userSelect: "none" };
+  const style = disableButtons
+    ? { ...defaultStyle, color: "rgba(0,0,0,.26)" }
+    : defaultStyle;
+
+  return (
+    <TablePagination
+      component="div"
+      count={rowCount}
+      rowsPerPage={rowsPerPage}
+      rowsPerPageOptions={[]}
+      page={currentPage - 1}
+      onPageChange={onChangePage}
+      onRowsPerPageChange={({ target }) =>
+        onChangeRowsPerPage(Number(target.value))
+      }
+      ActionsComponent={(props) =>
+        TablePaginationActions({ ...props, disableButtons })
+      }
+      style={style}
+    />
+  );
+};
+
+/* -------------------------------------------------------------------------- */
 /*                               Default columns                              */
 /* -------------------------------------------------------------------------- */
 
 const columns = [
   {
-    name: columnTitle("Change-Id"),
+    name: ColumnTitle("Change-Id"),
     selector: (row) => row.id,
     editable: true,
     reorder: false,
   },
   {
-    name: columnTitle("Code-Review"),
+    name: ColumnTitle("Code-Review"),
     selector: (row) => row.codeReview,
     minWidth: "115px", // necessary, otherwise text will cut it off on add mode
     compact: true,
@@ -174,7 +261,7 @@ const columns = [
     style: { "user-select": "none", draggable: false },
   },
   {
-    name: columnTitle("Verified"),
+    name: ColumnTitle("Verified"),
     selector: (row) => row.verified,
     right: true,
     style: { "user-select": "none", draggable: false },
@@ -185,12 +272,24 @@ const columns = [
 /*                            Table for Change-Ids                            */
 /* -------------------------------------------------------------------------- */
 
-function ChidTable() {
+function ChidTable({ chids, updated }) {
   // Constants
   const [maxEntriesPerPage] = useState(5);
 
-  // TODO: use change-id data from props
-  const [data, setData] = useState(mockChanges);
+  // Use change-id data from props
+  const [data, setData] = useState(chids);
+
+  // First loading, simply update state for data
+  useEffect(() => {
+    // TODO: maybe add some loading animation ?
+    setData(chids);
+  }, [chids]);
+
+  // Update animation
+  useEffect(() => {
+    //TODO: change columns "codeReview", "verified" to a different value
+    //corresponding to a update, and add some kind of style in that column
+  }, [updated]);
 
   // Add mode
   const [editingId, setEditingId] = useState("");
@@ -279,7 +378,7 @@ function ChidTable() {
   const createColumns = useMemo(() => {
     const rowActions = [
       {
-        name: columnTitle("Actions"),
+        name: ColumnTitle("Actions"),
         allowOverflow: true,
         width: "80px",
         cell: (row) => {
@@ -337,12 +436,12 @@ function ChidTable() {
   return (
     <Card variant="outlined" style={{ height: "300px" }}>
       <DataTable
-        title={title}
+        title={Title}
         columns={createColumns}
         data={data}
-        noDataComponent={emptyData}
-        actions={actions(disableButtons, addMode, selectMode)}
-        contextActions={contextActions(deleteAll)}
+        noDataComponent={EmptyData}
+        actions={Actions(disableButtons, addMode, selectMode)}
+        contextActions={ContextActions(deleteAll)}
         selectableRows={toggleSelection}
         clearSelectedRows={toggleCleared}
         onSelectedRowsChange={handleRowSelected}
