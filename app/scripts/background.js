@@ -1,13 +1,114 @@
+import { filter, isEmpty, isEqual, pick } from "lodash";
+import axios from "axios";
 import API from "../scripts/api";
-import mockChanges from "../scripts/background/mockData";
 
 // browser.runtime.onInstalled.addListener((details) => {
 //   console.log("previousVersion", details.previousVersion);
 // });
 
-// browser.browserAction.setBadgeText({
-//   text: `3`,
-// });
+/* -------------------------------------------------------------------------- */
+/*                               Initialization                               */
+/* -------------------------------------------------------------------------- */
+
+var polling = null;
+
+async function init() {
+  const data = await getChangesFromStorage();
+  if (data.length > 0) {
+    console.log("initializing update service");
+    polling = setInterval(service, 5000);
+  }
+}
+
+init();
+
+/* -------------------------------------------------------------------------- */
+/*                                    Utils                                   */
+/* -------------------------------------------------------------------------- */
+
+function clear() {
+  browser.browserAction.setBadgeText({
+    text: ``,
+  });
+  browser.storage.local.set({ changes: [] });
+}
+
+function getChangesFromStorage() {
+  return browser.storage.local
+    .get("changes")
+    .then((result) =>
+      isEmpty(result.changes) ? [] : JSON.parse(result.changes)
+    );
+}
+
+function saveChangesToStorage(data) {
+  browser.storage.local.set({ changes: JSON.stringify(data) });
+}
+
+async function queryOnGerrit(chid) {
+  // TODO: get these info from storage CANNOT COMMIT THIS, OK?
+  const url = `https://gerrit-review.googlesource.com/changes/${chid}/detail`;
+  const user = "dummy";
+  const pw = `dummy`;
+
+  let data = null;
+  try {
+    data = await axios
+      .get(
+        url,
+        {},
+        {
+          auth: {
+            username: user,
+            password: pw,
+          },
+        }
+      )
+      .then((response) => (response.status == 200 ? response.data : {}));
+  } catch (err) {
+    console.log("chid:", chid, "err code:", err.response.status);
+    data = { id: chid, error: true };
+  }
+
+  // Simply return empty
+  if (isEmpty(data) || data.error) return data;
+
+  // Otherwise, parse it
+  const object = JSON.parse(data.toString().replace(")]}'", ""));
+  const raw = pick(object, ["_number", "subject", "status", "labels"]);
+  const change = convertGerritData(raw);
+
+  return change;
+}
+
+const filterLabel = (items) => {
+  let value = 0,
+    date = null;
+  for (const item of items) {
+    if (item.date) {
+      if (item.value == -2) {
+        return item.value;
+      }
+
+      if (date == null || Date.parse(item.date) > date) {
+        value = item.value;
+        date = Date.parse(item.date);
+      }
+    }
+  }
+  return value;
+};
+
+function convertGerritData(raw) {
+  const change = pick(raw, ["subject", "status"]);
+  change.id = raw._number;
+
+  // filter labels
+  change.verified = filterLabel(raw.labels["Verified"]["all"]);
+  change.codeReview = filterLabel(raw.labels["Code-Review"]["all"]);
+
+  return change;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                               Message Handler                              */
@@ -18,6 +119,10 @@ function handleMessage(request, sender, sendResponse) {
   switch (request.type) {
     case API.GET_DATA:
       return getChanges();
+    case API.ADD_CHANGE:
+      return addChange(request);
+    case API.REMOVE_CHANGES:
+      return removeChanges(request);
   }
   return false;
 }
@@ -26,13 +131,88 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 /* ------------------------ Get Changes from Storage ------------------------ */
 
-function getChanges() {
-  // TODO: get from storage
-  return Promise.resolve({ response: mockChanges });
+async function getChanges() {
+  const changes = await getChangesFromStorage();
+  return Promise.resolve({ response: changes });
 }
 
-// TODO: remove, it was only for testing purpose
-var dummy = setInterval(function () {
-  browser.extension.sendMessage({ type: API.UPDATE_DATA, data: "hahahaha" });
-  clearInterval(dummy);
-}, 4000);
+/* ------------------------ Add new Change to Storage ----------------------- */
+
+async function addChange(request) {
+  console.log(`addChange received data: ${request.data}`);
+  const changes = await getChangesFromStorage();
+  const updated = [
+    ...changes,
+    {
+      id: request.data,
+      codeReview: 0,
+      verified: 0,
+    },
+  ];
+
+  // enable update service
+  if (updated.length > 0) {
+    polling = setInterval(service, 5000);
+  }
+
+  saveChangesToStorage(updated);
+  return true;
+}
+
+/* ----------------- Remove one or more Changes from Storage ---------------- */
+
+async function removeChanges(request) {
+  console.log(`removeChanges received data: ${request.data}`);
+  const changes = await getChangesFromStorage();
+  const updated = filter(changes, (o) => !request.data.includes(o.id));
+
+  // disable update service
+  if (updated.length == 0) {
+    polling = null;
+  }
+
+  saveChangesToStorage(updated);
+  return true;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Update service                               */
+/* -------------------------------------------------------------------------- */
+
+const service = async function () {
+  let changes = await getChangesFromStorage();
+  let updated = [];
+
+  // Query on gerrit
+  for (const [index, elem] of changes.entries()) {
+    // TODO: do not query if status is merged
+    const result = await queryOnGerrit(elem.id);
+
+    if (result.error || !isEqual(elem, result)) {
+      changes[index] = result;
+      updated.push(result);
+    }
+  }
+
+  // Send events (if popup is open, it will receive it)
+  if (updated.length > 0) {
+    // Update storage
+    await saveChangesToStorage(changes);
+
+    // Set badge on extension icon
+    browser.browserAction.setBadgeText({
+      text: `${updated.length}`,
+    });
+
+    // Send message to popup
+    browser.runtime
+      .sendMessage({ type: API.UPDATE_DATA, data: updated })
+      .then(ignore, ignore);
+  }
+
+  clearInterval(polling);
+};
+
+function ignore() {
+  console.log("ignoring");
+}

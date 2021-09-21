@@ -272,7 +272,7 @@ const columns = [
 /*                            Table for Change-Ids                            */
 /* -------------------------------------------------------------------------- */
 
-function ChidTable({ chids, updated }) {
+function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
   // Constants
   const [maxEntriesPerPage] = useState(5);
 
@@ -316,19 +316,20 @@ function ChidTable({ chids, updated }) {
   const save = (item) => {
     setEditingId("");
 
-    const newValue = formData[item.id];
-    if (newValue == undefined) {
+    const id = formData[item.id];
+    if (id == undefined) {
       // input didn't receive any event, just remove tmp entry from data
       data.shift();
     } else {
-      const exists = data.find((change) => change.id === newValue);
+      const exists = data.find((change) => change.id === id);
       if (exists != undefined) {
         // change-id already exists, just remove tmp entry from data
         // TODO: maybe show some notification
         data.shift();
       } else {
         // TODO: check if newValue is a valid number
-        data[0].id = newValue;
+        data[0].id = id;
+        onAddChange(id);
       }
     }
 
@@ -359,6 +360,10 @@ function ChidTable({ chids, updated }) {
     setToggleSelection(!toggleSelection);
     setToggleCleared(!toggleCleared);
     setData(differenceBy(data, selectedRows, "id"));
+
+    // Inform background service
+    const removedIds = selectedRows.map((change) => change.id);
+    onRemoveChanges(removedIds);
   };
 
   /* --------- create handler to update input field on change events -------- */
