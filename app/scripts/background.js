@@ -1,4 +1,4 @@
-import { filter, isEmpty, isEqual, pick } from "lodash";
+import { filter, isEmpty, isEqual, pick, remove } from "lodash";
 import axios from "axios";
 import API from "../scripts/api";
 
@@ -142,12 +142,12 @@ async function addChange(request) {
   console.log(`addChange received data: ${request.data}`);
   const changes = await getChangesFromStorage();
   const updated = [
-    ...changes,
     {
       id: request.data,
       codeReview: 0,
       verified: 0,
     },
+    ...changes,
   ];
 
   // enable update service
@@ -185,7 +185,11 @@ const service = async function () {
 
   // Query on gerrit
   for (const [index, elem] of changes.entries()) {
-    // TODO: do not query if status is merged
+    // Do not query if status is merged
+    if (elem.status === "MERGED") {
+      continue;
+    }
+
     const result = await queryOnGerrit(elem.id);
 
     if (result.error || !isEqual(elem, result)) {
@@ -196,6 +200,9 @@ const service = async function () {
 
   // Send events (if popup is open, it will receive it)
   if (updated.length > 0) {
+    // In case there was any error, remove entry from cache
+    remove(changes, (c) => c.error === true);
+
     // Update storage
     await saveChangesToStorage(changes);
 
@@ -208,6 +215,8 @@ const service = async function () {
     browser.runtime
       .sendMessage({ type: API.UPDATE_DATA, data: updated })
       .then(ignore, ignore);
+
+    // TODO: send notification
   }
 
   clearInterval(polling);
