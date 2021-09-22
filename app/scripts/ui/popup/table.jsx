@@ -31,12 +31,30 @@ import Clear from "@material-ui/icons/ClearTwoTone";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
+import Neg2 from "@material-ui/icons/ExposureNeg2";
+import Neg1 from "@material-ui/icons/ExposureNeg1";
+import Zero from "@material-ui/icons/ExposureZero";
+import Plus1 from "@material-ui/icons/ExposurePlus1";
+import Plus2 from "@material-ui/icons/ExposurePlus2";
+
 /* -------------------------------------------------------------------------- */
 /*                                Custom styles                               */
 /* -------------------------------------------------------------------------- */
 
 //  Internally, this will deep merges with the default styling
 const customStyles = {
+  headCells: {
+    style: {
+      paddingLeft: "8px",
+      paddingRight: "8px",
+    },
+  },
+  cells: {
+    style: {
+      paddingLeft: "8px",
+      paddingRight: "8px",
+    },
+  },
   rows: {
     style: {
       borderBottomStyle: "solid",
@@ -58,11 +76,19 @@ const Title = (
 
 /* -------------------------------------------------------------------------- */
 
-const ColumnTitle = (title) => (
-  <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
-    {title}
-  </Typography>
-);
+const ColumnTitle = (title, hint) => {
+  const ConditionalHint = ({ condition, children }) =>
+    condition ? <Tooltip title={hint}>{children}</Tooltip> : children;
+
+  const show = hint !== undefined ? true : false;
+  return (
+    <ConditionalHint condition={show}>
+      <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
+        {title}
+      </Typography>
+    </ConditionalHint>
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 
@@ -173,6 +199,23 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
 
 /* -------------------------------------------------------------------------- */
 
+const Label = (value) => {
+  switch (value) {
+    case -2:
+      return <Neg2 fontSize="small" />;
+    case -1:
+      return <Neg1 fontSize="small" />;
+    case 1:
+      return <Plus1 fontSize="small" />;
+    case 2:
+      return <Plus2 fontSize="small" />;
+    default:
+      return <Zero fontSize="small" />;
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+
 const TablePaginationActions = (props) => {
   const { count, page, rowsPerPage, onPageChange, disableButtons } = props;
 
@@ -245,26 +288,55 @@ const CustomTablePagination = ({
 /*                               Default columns                              */
 /* -------------------------------------------------------------------------- */
 
+const labelStyle = (name) => [
+  {
+    when: (row) => row[name] > 0,
+    style: {
+      color: "rgb(76, 175, 80)",
+    },
+  },
+  {
+    when: (row) => row[name] < 0,
+    style: {
+      color: "rgb(255, 23, 68)",
+    },
+  },
+];
+
 const columns = [
   {
-    name: ColumnTitle("Change-Id"),
+    name: ColumnTitle("Number"),
     selector: (row) => row.id,
+    width: "75px",
     editable: true,
-    reorder: false,
+    style: { draggable: false },
   },
   {
-    name: ColumnTitle("Code-Review"),
-    selector: (row) => row.codeReview,
-    minWidth: "115px", // necessary, otherwise text will cut it off on add mode
+    name: ColumnTitle("Subject"),
+    selector: (row) => row.subject,
     compact: true,
-    right: true,
-    style: { "user-select": "none", draggable: false },
+    wrap: true,
+    style: { draggable: false },
   },
   {
-    name: ColumnTitle("Verified"),
-    selector: (row) => row.verified,
-    right: true,
+    name: ColumnTitle("CR", "Code-Review"),
+    selector: (row) => row.codeReview,
+    width: "30px",
+    compact: true,
+    center: true,
     style: { "user-select": "none", draggable: false },
+    conditionalCellStyles: labelStyle("codeReview"),
+    cell: (row) => Label(row.codeReview),
+  },
+  {
+    name: ColumnTitle("V", "Verified"),
+    selector: (row) => row.verified,
+    width: "30px",
+    compact: true,
+    center: true,
+    style: { "user-select": "none", draggable: false },
+    conditionalCellStyles: labelStyle("verified"),
+    cell: (row) => Label(row.verified),
   },
 ];
 
