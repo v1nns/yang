@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { isEmpty } from "lodash";
 import ReactDOM from "react-dom";
 
 import Button from "@material-ui/core/Button";
@@ -7,9 +8,35 @@ import Grid from "@material-ui/core/Grid";
 
 import GerritConfig from "../scripts/ui/options/gerrit";
 import GeneralConfig from "../scripts/ui/options/general";
-import { height } from "dom-helpers";
 
 function Options() {
+  const [refreshTime, setRefreshTime] = useState(30);
+  const [endpoint, setEndpoint] = useState("");
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    // fetch data from storage directly
+    const data = await browser.storage.local
+      .get("options")
+      .then((result) =>
+        !isEmpty(result.options) ? JSON.parse(result.options) : {}
+      );
+
+    setRefreshTime(data.refreshTime);
+    setEndpoint(data.endpoint);
+    setCredentials(data.credentials);
+  };
+
+  const handleClickSave = (e) => {
+    const data = { refreshTime, endpoint, credentials };
+    browser.storage.local.set({ options: JSON.stringify(data) });
+    // TODO: show some popup telling config was saved succesfully
+  };
+
   return (
     <div style={{ height: "100%" }}>
       <Grid
@@ -20,16 +47,24 @@ function Options() {
         spacing={3}
       >
         <Grid item container xs={12}>
-          <GeneralConfig />
+          <GeneralConfig
+            data={refreshTime}
+            onChangeRefreshTime={setRefreshTime}
+          />
         </Grid>
 
         <Grid item container xs={12}>
-          <GerritConfig />
+          <GerritConfig
+            endpoint={endpoint}
+            credentials={credentials}
+            onChangeEndpoint={setEndpoint}
+            onChangeCredentials={setCredentials}
+          />
         </Grid>
       </Grid>
 
       <div style={{ position: "absolute", bottom: 15, right: 15 }}>
-        <Button>Save</Button>
+        <Button onClick={handleClickSave}>Save</Button>
       </div>
     </div>
   );

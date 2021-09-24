@@ -14,7 +14,12 @@ import Lock from "@material-ui/icons/LockTwoTone";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-function GerritConfig() {
+function GerritConfig({
+  endpoint,
+  credentials,
+  onChangeEndpoint,
+  onChangeCredentials,
+}) {
   return (
     <Grid container spacing={2} justifyContent="center">
       <Grid item xs={12}>
@@ -28,8 +33,12 @@ function GerritConfig() {
         <TextField
           id="input-endpoint"
           label="Endpoint URL"
+          value={endpoint}
           size="small"
+          // TODO: centralize these style props
+          inputProps={{ style: { fontSize: "0.9em" } }}
           InputLabelProps={{ shrink: true }}
+          onChange={(e) => onChangeEndpoint(e.target.value)}
           fullWidth
         />
       </Grid>
@@ -62,10 +71,19 @@ function GerritConfig() {
                     <TextField
                       id="input-email"
                       label="Email address"
+                      value={credentials.email}
                       size="small"
+                      inputProps={{ style: { fontSize: "0.9em" } }}
                       InputLabelProps={{
                         shrink: true,
                       }}
+                      onChange={(e) =>
+                        // TODO: add email validation
+                        onChangeCredentials({
+                          ...credentials,
+                          email: e.target.value,
+                        })
+                      }
                       fullWidth
                     />
                   </Grid>
@@ -86,8 +104,16 @@ function GerritConfig() {
                     <TextField
                       id="input-password"
                       label="HTTP password"
+                      value={credentials.password}
                       size="small"
+                      inputProps={{ style: { fontSize: "0.9em" } }}
                       InputLabelProps={{ shrink: true }}
+                      onChange={(e) =>
+                        onChangeCredentials({
+                          ...credentials,
+                          password: e.target.value,
+                        })
+                      }
                       fullWidth
                     />
                   </Grid>

@@ -1,15 +1,12 @@
 import React from "react";
 
+import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
+import Slider from "@material-ui/core/Slider";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
-import Slider from "@material-ui/core/Slider";
-
-import Divider from "@material-ui/core/Divider";
-
-import Tooltip from "@material-ui/core/Tooltip";
-
-function ValueLabelComponent(props) {
+const ValueLabelComponent = (props) => {
   const { children, value } = props;
 
   return (
@@ -17,9 +14,9 @@ function ValueLabelComponent(props) {
       {children}
     </Tooltip>
   );
-}
+};
 
-function GeneralConfig() {
+function GeneralConfig({ data, onChangeRefreshTime }) {
   return (
     <Grid container spacing={2} justifyContent="center">
       <Grid item xs={12}>
@@ -32,8 +29,10 @@ function GeneralConfig() {
       <Grid item xs={12}>
         <Typography
           style={{
-            fontSize: "0.8rem",
+            fontSize: "0.75rem",
             color: "rgba(0,0,0,0.7)",
+            lineHeight: 1,
+            padding: 0,
           }}
         >
           Refresh time (seconds):
@@ -43,7 +42,8 @@ function GeneralConfig() {
       <Grid item xs={11}>
         <Slider
           aria-label="RefreshTime"
-          defaultValue={30}
+          value={data}
+          onChange={(e, val) => onChangeRefreshTime(val)}
           valueLabelDisplay="auto"
           step={15}
           min={15}

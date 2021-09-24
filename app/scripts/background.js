@@ -37,7 +37,15 @@ function getChangesFromStorage() {
   return browser.storage.local
     .get("changes")
     .then((result) =>
-      isEmpty(result.changes) ? [] : JSON.parse(result.changes)
+      !isEmpty(result.changes) ? JSON.parse(result.changes) : []
+    );
+}
+
+function getOptionsFromStorage() {
+  return browser.storage.local
+    .get("options")
+    .then((result) =>
+      !isEmpty(result.options) ? JSON.parse(result.options) : {}
     );
 }
 
@@ -45,11 +53,8 @@ function saveChangesToStorage(data) {
   browser.storage.local.set({ changes: JSON.stringify(data) });
 }
 
-async function queryOnGerrit(chid) {
-  // TODO: get these info from storage CANNOT COMMIT THIS, OK?
-  const url = `https://gerrit-review.googlesource.com/changes/${chid}/detail`;
-  const user = "dummy";
-  const pw = `dummy`;
+async function queryOnGerrit(options, chid) {
+  const url = `${options.endpoint}/changes/${chid}/detail`;
 
   let data = null;
   try {
@@ -59,8 +64,8 @@ async function queryOnGerrit(chid) {
         {},
         {
           auth: {
-            username: user,
-            password: pw,
+            username: options.credentials.email,
+            password: options.credentials.password,
           },
         }
       )
@@ -180,6 +185,18 @@ async function removeChanges(request) {
 /* -------------------------------------------------------------------------- */
 
 const service = async function () {
+  const options = await getOptionsFromStorage();
+  const isConfigValid =
+    options.endpoint.length > 0 &&
+    options.credentials.email.length > 0 &&
+    options.credentials.password.length > 0;
+
+  if (!isConfigValid) {
+    // TODO: send some kind of notification telling about this
+    clearInterval(polling);
+    return;
+  }
+
   let changes = await getChangesFromStorage();
   let updated = [];
 
@@ -190,7 +207,7 @@ const service = async function () {
       continue;
     }
 
-    const result = await queryOnGerrit(elem.id);
+    const result = await queryOnGerrit(options, elem.id);
 
     if (result.error || !isEqual(elem, result)) {
       changes[index] = result;
