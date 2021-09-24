@@ -8,7 +8,6 @@ import React, {
 import differenceBy from "lodash/differenceBy";
 
 // Components
-import Card from "@material-ui/core/Card";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -20,13 +19,13 @@ import Fade from "@material-ui/core/Fade";
 import DataTable from "react-data-table-component";
 
 // Icons
-import Add from "@material-ui/icons/AddTwoTone";
-import Edit from "@material-ui/icons/EditTwoTone";
-import Delete from "@material-ui/icons/DeleteTwoTone";
-import Info from "@material-ui/icons/InfoTwoTone";
+import Add from "@material-ui/icons/Add";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/Delete";
+import Info from "@material-ui/icons/Info";
 
-import Done from "@material-ui/icons/DoneTwoTone";
-import Clear from "@material-ui/icons/ClearTwoTone";
+import Done from "@material-ui/icons/Done";
+import Clear from "@material-ui/icons/Clear";
 
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
@@ -539,7 +538,7 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
   const disableButtons = editingId === 0 && !toggleSelection;
 
   return (
-    <Card variant="outlined" style={{ height: "300px" }}>
+    <div style={{ height: "300px" }}>
       <DataTable
         title={Title}
         columns={createColumns}
@@ -561,7 +560,7 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
         customStyles={customStyles}
         conditionalRowStyles={rowStyle}
       />
-    </Card>
+    </div>
   );
 }
 

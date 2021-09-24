@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
-import Divider from "@material-ui/core/Divider";
-
 import AppBar from "../scripts/ui/popup/appbar";
 import ChidTable from "../scripts/ui/popup/table";
 
@@ -49,7 +47,7 @@ function Popup() {
   return (
     <div style={{ height: "100%" }}>
       <AppBar onClickSettings={handleClickSettings} />
-      <Divider variant="fullWidth" style={{ marginTop: 5, marginBottom: 10 }} />
+      {/* <Divider variant="fullWidth" style={{ marginTop: 5, marginBottom: 10 }} /> */}
       <ChidTable
         chids={changes}
         onAddChange={handleAddChange}

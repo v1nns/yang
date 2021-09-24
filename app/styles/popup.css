@@ -20,3 +20,8 @@ input[type="number"]::-webkit-outer-spin-button {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, supported by Chrome, Edge, Opera and Firefox */
 }
+
+/* remove any margin from html body */
+body {
+  margin: 0px !important;
+}
