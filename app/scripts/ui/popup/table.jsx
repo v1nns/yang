@@ -76,11 +76,11 @@ const Title = (
 
 /* -------------------------------------------------------------------------- */
 
-const ColumnTitle = (title, hint) => {
+const ColumnTitle = ({ title, hint }) => {
   const ConditionalHint = ({ condition, children }) =>
     condition ? <Tooltip title={hint}>{children}</Tooltip> : children;
 
-  const show = hint !== undefined ? true : false;
+  const show = hint !== undefined;
   return (
     <ConditionalHint condition={show}>
       <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
@@ -199,7 +199,7 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
 
 /* -------------------------------------------------------------------------- */
 
-const Label = (value) => {
+const Label = ({ value }) => {
   switch (value) {
     case -2:
       return <Neg2 fontSize="small" />;
@@ -288,6 +288,23 @@ const CustomTablePagination = ({
 /*                               Default columns                              */
 /* -------------------------------------------------------------------------- */
 
+const rowStyle = [
+  {
+    when: (row) => row.status === "MERGED",
+    style: {
+      backgroundColor: "rgba(76, 175, 80, 0.1)",
+      color: "rgba(0,0,0,0.5)",
+    },
+  },
+  {
+    when: (row) => row.verified === -1 || row.codeReview === -2,
+    style: {
+      backgroundColor: "rgba(255, 23, 68, 0.1)",
+      color: "rgba(0,0,0,0.5)",
+    },
+  },
+];
+
 const labelStyle = (name) => [
   {
     when: (row) => row[name] > 0,
@@ -305,38 +322,47 @@ const labelStyle = (name) => [
 
 const columns = [
   {
-    name: ColumnTitle("Number"),
+    name: <ColumnTitle title="ID" hint="Change-Id" />,
     selector: (row) => row.id,
     width: "75px",
     editable: true,
     style: { draggable: false },
   },
   {
-    name: ColumnTitle("Subject"),
+    name: <ColumnTitle title="Subject" />,
     selector: (row) => row.subject,
     compact: true,
     wrap: true,
     style: { draggable: false },
   },
   {
-    name: ColumnTitle("CR", "Code-Review"),
+    name: <ColumnTitle title="CR" hint="Code-Review" />,
     selector: (row) => row.codeReview,
     width: "30px",
     compact: true,
     center: true,
-    style: { "user-select": "none", draggable: false },
+    style: {
+      "user-select": "none",
+      draggable: false,
+      borderLeftStyle: "solid",
+      borderLeftWidth: "1px",
+      borderLeftColor: "rgba(0,0,0,.12)",
+      borderRightStyle: "solid",
+      borderRightWidth: "1px",
+      borderRightColor: "rgba(0,0,0,.12)",
+    },
     conditionalCellStyles: labelStyle("codeReview"),
-    cell: (row) => Label(row.codeReview),
+    cell: (row) => <Label value={row.codeReview} />,
   },
   {
-    name: ColumnTitle("V", "Verified"),
+    name: <ColumnTitle title="V" hint="Verified" />,
     selector: (row) => row.verified,
     width: "30px",
     compact: true,
     center: true,
     style: { "user-select": "none", draggable: false },
     conditionalCellStyles: labelStyle("verified"),
-    cell: (row) => Label(row.verified),
+    cell: (row) => <Label value={row.verified} />,
   },
 ];
 
@@ -455,9 +481,11 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
   const createColumns = useMemo(() => {
     const rowActions = [
       {
-        name: ColumnTitle("Actions"),
+        name: "",
         allowOverflow: true,
-        width: "80px",
+        width: "50px",
+        compact: true,
+        style: { paddingLeft: "2px" },
         cell: (row) => {
           const editable = isEditing(row);
           if (editable) {
@@ -531,6 +559,7 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
           CustomTablePagination({ ...props, disableButtons })
         }
         customStyles={customStyles}
+        conditionalRowStyles={rowStyle}
       />
     </Card>
   );

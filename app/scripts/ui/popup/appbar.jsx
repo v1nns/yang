@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import DarkMode from "@material-ui/icons/Brightness4TwoTone";
 import Settings from "@material-ui/icons/SettingsTwoTone";
 
-function AppBar() {
+function AppBar({ onClickSettings }) {
   return (
     <Grid container alignItems="center">
       <Grid item xs>
@@ -16,7 +16,12 @@ function AppBar() {
       </Grid>
       <Grid item>
         <Tooltip title="Settings">
-          <IconButton aria-label="settings" size="small" color="primary">
+          <IconButton
+            aria-label="settings"
+            size="small"
+            color="primary"
+            onClick={onClickSettings}
+          >
             <Settings fontSize="small" />
           </IconButton>
         </Tooltip>

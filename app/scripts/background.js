@@ -101,7 +101,7 @@ const filterLabel = (items) => {
 
 function convertGerritData(raw) {
   const change = pick(raw, ["subject", "status"]);
-  change.id = raw._number;
+  change.id = raw._number.toString();
 
   // filter labels
   change.verified = filterLabel(raw.labels["Verified"]["all"]);

@@ -33,6 +33,10 @@ function Popup() {
     setChanges(result.response);
   };
 
+  const handleClickSettings = (e) => {
+    browser.runtime.openOptionsPage();
+  };
+
   // Send change-id to background service to start querying for it
   const handleAddChange = (id) => {
     browser.runtime.sendMessage({ type: API.ADD_CHANGE, data: id });
@@ -44,7 +48,7 @@ function Popup() {
 
   return (
     <div style={{ height: "100%" }}>
-      <AppBar />
+      <AppBar onClickSettings={handleClickSettings} />
       <Divider variant="fullWidth" style={{ marginTop: 5, marginBottom: 10 }} />
       <ChidTable
         chids={changes}
