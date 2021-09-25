@@ -29,11 +29,16 @@ function Popup() {
   }
 
   const fetchData = async () => {
+    // Remove badge from extension icon
+    browser.browserAction.setBadgeText({
+      text: ``,
+    });
+
     // Dark Mode
     const isDarkMode = await browser.storage.local
       .get("darkMode")
       .then((result) =>
-        !isEmpty(result.darkMode) ? JSON.parse(result.darkMode) : {}
+        !isEmpty(result.darkMode) ? JSON.parse(result.darkMode) : false
       );
 
     setDarkMode(isDarkMode);

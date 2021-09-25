@@ -6,7 +6,7 @@ import { createTheme } from "react-data-table-component";
 /* -------------------------------------------------------------------------- */
 
 const iconDark = {
-  colorActive: "rgb(255, 255, 255)",
+  colorActive: "rgb(173, 186, 199)",
   colorDisabled: "rgb(65, 71, 79)",
 };
 
@@ -53,7 +53,8 @@ const ThemeDark = {
     last: "rgb(65, 71, 79)",
   },
   table: {
-    border: "rgba(173, 186, 199, .12)",
+    border: "rgba(81, 81, 81, 1)",
+    divider: "rgba(173, 186, 199, .12)",
   },
 };
 
@@ -69,6 +70,7 @@ const ThemeLight = {
   },
   table: {
     border: "rgba(0, 0, 0, .12)",
+    divider: "rgba(0, 0, 0, .12)",
   },
 };
 
@@ -80,7 +82,7 @@ createTheme("darkest", {
   text: {
     primary: ThemeDark.foreground,
     secondary: "rgb(255, 255, 255)",
-    disabled: "rgba(0,0,0,.12)",
+    disabled: "rgba(0, 0, 0, .12)",
   },
   background: {
     default: ThemeDark.background,

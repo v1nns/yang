@@ -48,8 +48,8 @@ const customStyles = (dark) => {
   return {
     header: {
       style: {
+        borderBottomWidth: "2px",
         borderBottomStyle: "solid",
-        borderBottomWidth: "1px",
         borderBottomColor: borderColor,
       },
     },
@@ -63,13 +63,6 @@ const customStyles = (dark) => {
       style: {
         paddingLeft: "8px",
         paddingRight: "8px",
-      },
-    },
-    rows: {
-      style: {
-        borderBottomStyle: "solid",
-        borderBottomWidth: "1px",
-        borderBottomColor: borderColor,
       },
     },
   };
@@ -297,8 +290,9 @@ const CustomTablePagination = ({
     ? {
         backgroundColor: ThemeDark.background,
         color: ThemeDark.foreground,
+        borderTop: `2px solid ${ThemeDark.table.border}`,
       }
-    : {};
+    : { borderTop: `2px solid ${ThemeLight.table.border}` };
   // TODO: improve this, maybe do something like "getButtonStyle"
   const style = Object.assign(defaultStyle, themeStyle);
 
@@ -358,7 +352,10 @@ const labelStyle = (name) => [
 ];
 
 const columns = (dark) => {
-  const borderColor = dark ? ThemeDark.table.border : ThemeLight.table.border;
+  const dividerColor = dark
+    ? ThemeDark.table.divider
+    : ThemeLight.table.divider;
+
   return [
     {
       name: <ColumnTitle title="ID" hint="Change-Id" />,
@@ -381,15 +378,15 @@ const columns = (dark) => {
       compact: true,
       center: true,
       style: {
-        "user-select": "none",
+        userSelect: "none",
         draggable: false,
         // Add manually borders around this label
         borderLeftStyle: "solid",
         borderLeftWidth: "1px",
-        borderLeftColor: borderColor,
+        borderLeftColor: dividerColor,
         borderRightStyle: "solid",
         borderRightWidth: "1px",
-        borderRightColor: borderColor,
+        borderRightColor: dividerColor,
       },
       conditionalCellStyles: labelStyle("codeReview"),
       cell: (row) => <Label value={row.codeReview} />,
@@ -400,7 +397,7 @@ const columns = (dark) => {
       width: "30px",
       compact: true,
       center: true,
-      style: { "user-select": "none", draggable: false },
+      style: { userSelect: "none", draggable: false },
       conditionalCellStyles: labelStyle("verified"),
       cell: (row) => <Label value={row.verified} />,
     },
