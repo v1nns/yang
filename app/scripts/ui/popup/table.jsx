@@ -36,31 +36,43 @@ import Zero from "@material-ui/icons/ExposureZero";
 import Plus1 from "@material-ui/icons/ExposurePlus1";
 import Plus2 from "@material-ui/icons/ExposurePlus2";
 
+import { Colors, getButtonStyle, ThemeDark, ThemeLight } from "../popup/theme";
+
 /* -------------------------------------------------------------------------- */
 /*                                Custom styles                               */
 /* -------------------------------------------------------------------------- */
 
 //  Internally, this will deep merges with the default styling
-const customStyles = {
-  headCells: {
-    style: {
-      paddingLeft: "8px",
-      paddingRight: "8px",
+const customStyles = (dark) => {
+  const borderColor = dark ? ThemeDark.table.border : ThemeLight.table.border;
+  return {
+    header: {
+      style: {
+        borderBottomStyle: "solid",
+        borderBottomWidth: "1px",
+        borderBottomColor: borderColor,
+      },
     },
-  },
-  cells: {
-    style: {
-      paddingLeft: "8px",
-      paddingRight: "8px",
+    headCells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+      },
     },
-  },
-  rows: {
-    style: {
-      borderBottomStyle: "solid",
-      borderBottomWidth: "1px",
-      borderBottomColor: "rgba(0,0,0,.12)",
+    cells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+      },
     },
-  },
+    rows: {
+      style: {
+        borderBottomStyle: "solid",
+        borderBottomWidth: "1px",
+        borderBottomColor: borderColor,
+      },
+    },
+  };
 };
 
 /* -------------------------------------------------------------------------- */
@@ -119,31 +131,41 @@ const EmptyData = (
 
 /* -------------------------------------------------------------------------- */
 
-const Actions = (disableButtons, addHandler, selectionHandler) => (
-  <div>
-    <Tooltip title="Add Change-Id">
-      <IconButton
-        color="primary"
-        size="small"
-        onClick={addHandler}
-        disabled={disableButtons}
-      >
-        <Add />
-      </IconButton>
-    </Tooltip>
-    <Tooltip title="Toggle selection">
-      <IconButton
-        color="primary"
-        size="small"
-        onClick={selectionHandler}
-        disabled={disableButtons}
-      >
-        <Edit />
-      </IconButton>
-    </Tooltip>
-  </div>
-);
-
+const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
+  const classes = getButtonStyle(dark);
+  return (
+    <div>
+      <Tooltip title="Add Change-Id">
+        <IconButton
+          color="primary"
+          size="small"
+          onClick={addHandler}
+          disabled={disableButtons}
+          classes={{
+            root: classes.root,
+            disabled: classes.disabled,
+          }}
+        >
+          <Add />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Toggle selection">
+        <IconButton
+          color="primary"
+          size="small"
+          onClick={selectionHandler}
+          disabled={disableButtons}
+          classes={{
+            root: classes.root,
+            disabled: classes.disabled,
+          }}
+        >
+          <Edit />
+        </IconButton>
+      </Tooltip>
+    </div>
+  );
+};
 /* -------------------------------------------------------------------------- */
 
 const ContextActions = (deleteHandler) => (
@@ -216,7 +238,8 @@ const Label = ({ value }) => {
 /* -------------------------------------------------------------------------- */
 
 const TablePaginationActions = (props) => {
-  const { count, page, rowsPerPage, onPageChange, disableButtons } = props;
+  const { count, page, rowsPerPage, onPageChange, dark, disableButtons } =
+    props;
 
   // RDT uses page index starting at 1, MUI starts at 0
   // i.e. page prop will be off by one here
@@ -228,12 +251,17 @@ const TablePaginationActions = (props) => {
     onPageChange(page + 2);
   };
 
+  const classes = getButtonStyle(dark);
   return (
     <>
       <IconButton
         onClick={handleBackButtonClick}
         disabled={page === 0 || disableButtons}
         aria-label="previous page"
+        classes={{
+          root: classes.root,
+          disabled: classes.disabled,
+        }}
       >
         <KeyboardArrowLeft />
       </IconButton>
@@ -241,6 +269,10 @@ const TablePaginationActions = (props) => {
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1 || disableButtons}
         aria-label="next page"
+        classes={{
+          root: classes.root,
+          disabled: classes.disabled,
+        }}
       >
         <KeyboardArrowRight />
       </IconButton>
@@ -256,13 +288,19 @@ const CustomTablePagination = ({
   onChangePage,
   onChangeRowsPerPage,
   currentPage,
+  dark,
   disableButtons,
 }) => {
   // disable text selection
   const defaultStyle = { userSelect: "none" };
-  const style = disableButtons
-    ? { ...defaultStyle, color: "rgba(0,0,0,.26)" }
-    : defaultStyle;
+  const themeStyle = dark
+    ? {
+        backgroundColor: ThemeDark.background,
+        color: ThemeDark.foreground,
+      }
+    : {};
+  // TODO: improve this, maybe do something like "getButtonStyle"
+  const style = Object.assign(defaultStyle, themeStyle);
 
   return (
     <TablePagination
@@ -276,7 +314,7 @@ const CustomTablePagination = ({
         onChangeRowsPerPage(Number(target.value))
       }
       ActionsComponent={(props) =>
-        TablePaginationActions({ ...props, disableButtons })
+        TablePaginationActions({ ...props, dark, disableButtons })
       }
       style={style}
     />
@@ -287,19 +325,19 @@ const CustomTablePagination = ({
 /*                               Default columns                              */
 /* -------------------------------------------------------------------------- */
 
-const rowStyle = [
+const rowStyle = (dark) => [
   {
     when: (row) => row.status === "MERGED",
     style: {
-      backgroundColor: "rgba(76, 175, 80, 0.1)",
-      color: "rgba(0,0,0,0.5)",
+      backgroundColor: Colors.status.ok,
+      color: dark ? ThemeDark.foreground : ThemeLight.foreground,
     },
   },
   {
     when: (row) => row.verified === -1 || row.codeReview === -2,
     style: {
-      backgroundColor: "rgba(255, 23, 68, 0.1)",
-      color: "rgba(0,0,0,0.5)",
+      backgroundColor: Colors.status.fail,
+      color: dark ? ThemeDark.foreground : ThemeLight.foreground,
     },
   },
 ];
@@ -308,68 +346,72 @@ const labelStyle = (name) => [
   {
     when: (row) => row[name] > 0,
     style: {
-      color: "rgb(76, 175, 80)",
+      color: Colors.label.ok,
     },
   },
   {
     when: (row) => row[name] < 0,
     style: {
-      color: "rgb(255, 23, 68)",
+      color: Colors.label.fail,
     },
   },
 ];
 
-const columns = [
-  {
-    name: <ColumnTitle title="ID" hint="Change-Id" />,
-    selector: (row) => row.id,
-    width: "75px",
-    editable: true,
-    style: { draggable: false },
-  },
-  {
-    name: <ColumnTitle title="Subject" />,
-    selector: (row) => row.subject,
-    compact: true,
-    wrap: true,
-    style: { draggable: false },
-  },
-  {
-    name: <ColumnTitle title="CR" hint="Code-Review" />,
-    selector: (row) => row.codeReview,
-    width: "30px",
-    compact: true,
-    center: true,
-    style: {
-      "user-select": "none",
-      draggable: false,
-      borderLeftStyle: "solid",
-      borderLeftWidth: "1px",
-      borderLeftColor: "rgba(0,0,0,.12)",
-      borderRightStyle: "solid",
-      borderRightWidth: "1px",
-      borderRightColor: "rgba(0,0,0,.12)",
+const columns = (dark) => {
+  const borderColor = dark ? ThemeDark.table.border : ThemeLight.table.border;
+  return [
+    {
+      name: <ColumnTitle title="ID" hint="Change-Id" />,
+      selector: (row) => row.id,
+      width: "75px",
+      editable: true,
+      style: { draggable: false },
     },
-    conditionalCellStyles: labelStyle("codeReview"),
-    cell: (row) => <Label value={row.codeReview} />,
-  },
-  {
-    name: <ColumnTitle title="V" hint="Verified" />,
-    selector: (row) => row.verified,
-    width: "30px",
-    compact: true,
-    center: true,
-    style: { "user-select": "none", draggable: false },
-    conditionalCellStyles: labelStyle("verified"),
-    cell: (row) => <Label value={row.verified} />,
-  },
-];
+    {
+      name: <ColumnTitle title="Subject" />,
+      selector: (row) => row.subject,
+      compact: true,
+      wrap: true,
+      style: { draggable: false },
+    },
+    {
+      name: <ColumnTitle title="CR" hint="Code-Review" />,
+      selector: (row) => row.codeReview,
+      width: "30px",
+      compact: true,
+      center: true,
+      style: {
+        "user-select": "none",
+        draggable: false,
+        // Add manually borders around this label
+        borderLeftStyle: "solid",
+        borderLeftWidth: "1px",
+        borderLeftColor: borderColor,
+        borderRightStyle: "solid",
+        borderRightWidth: "1px",
+        borderRightColor: borderColor,
+      },
+      conditionalCellStyles: labelStyle("codeReview"),
+      cell: (row) => <Label value={row.codeReview} />,
+    },
+    {
+      name: <ColumnTitle title="V" hint="Verified" />,
+      selector: (row) => row.verified,
+      width: "30px",
+      compact: true,
+      center: true,
+      style: { "user-select": "none", draggable: false },
+      conditionalCellStyles: labelStyle("verified"),
+      cell: (row) => <Label value={row.verified} />,
+    },
+  ];
+};
 
 /* -------------------------------------------------------------------------- */
 /*                            Table for Change-Ids                            */
 /* -------------------------------------------------------------------------- */
 
-function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
+function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   // Constants
   const [maxEntriesPerPage] = useState(5);
 
@@ -494,11 +536,17 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
                   <IconButton
                     color="primary"
                     size="small"
+                    style={{ color: Colors.label.ok }}
                     onClick={() => save(row)}
                   >
                     <Done fontSize="inherit" />
                   </IconButton>
-                  <IconButton color="secondary" size="small" onClick={cancel}>
+                  <IconButton
+                    color="secondary"
+                    size="small"
+                    style={{ color: Colors.label.fail }}
+                    onClick={cancel}
+                  >
                     <Clear fontSize="inherit" />
                   </IconButton>
                 </div>
@@ -511,7 +559,7 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
 
     return [
       ...(editingId !== "" ? rowActions : []),
-      ...columns.map((col) => {
+      ...columns(dark).map((col) => {
         if (!col.editable) {
           return col;
         }
@@ -533,10 +581,10 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
         };
       }),
     ];
-  }, [data, editingId]);
+  }, [dark, data, editingId]);
 
   const disableButtons = editingId === 0 && !toggleSelection;
-
+  const theme = dark ? "darkest" : "default";
   return (
     <div style={{ height: "300px" }}>
       <DataTable
@@ -544,21 +592,22 @@ function ChidTable({ chids, updated, onAddChange, onRemoveChanges }) {
         columns={createColumns}
         data={data}
         noDataComponent={EmptyData}
-        actions={Actions(disableButtons, addMode, selectMode)}
+        actions={Actions(dark, disableButtons, addMode, selectMode)}
         contextActions={ContextActions(deleteAll)}
         selectableRows={toggleSelection}
         clearSelectedRows={toggleCleared}
         onSelectedRowsChange={handleRowSelected}
-        dense
-        highlightOnHover
         pagination
         paginationResetDefaultPage={toggleResetPagination}
         paginationPerPage={maxEntriesPerPage}
         paginationComponent={(props) =>
-          CustomTablePagination({ ...props, disableButtons })
+          CustomTablePagination({ ...props, dark, disableButtons })
         }
-        customStyles={customStyles}
-        conditionalRowStyles={rowStyle}
+        customStyles={customStyles(dark)}
+        conditionalRowStyles={rowStyle(dark)}
+        theme={theme}
+        highlightOnHover
+        dense
       />
     </div>
   );

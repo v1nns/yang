@@ -8,6 +8,7 @@ import API from "../scripts/api";
 
 function Popup() {
   const [changes, setChanges] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
 
   // Add/remove listener and fetch changes list from background script
   useEffect(() => {
@@ -35,6 +36,11 @@ function Popup() {
     browser.runtime.openOptionsPage();
   };
 
+  const handleClickDarkMode = (e) => {
+    // TODO: save it into browser local storage
+    setDarkMode(!darkMode);
+  };
+
   // Send change-id to background service to start querying for it
   const handleAddChange = (id) => {
     browser.runtime.sendMessage({ type: API.ADD_CHANGE, data: id });
@@ -46,12 +52,16 @@ function Popup() {
 
   return (
     <div style={{ height: "100%" }}>
-      <AppBar onClickSettings={handleClickSettings} />
-      {/* <Divider variant="fullWidth" style={{ marginTop: 5, marginBottom: 10 }} /> */}
+      <AppBar
+        onClickSettings={handleClickSettings}
+        onClickDarkMode={handleClickDarkMode}
+        dark={darkMode}
+      />
       <ChidTable
         chids={changes}
         onAddChange={handleAddChange}
         onRemoveChanges={handleRemoveChanges}
+        dark={darkMode}
       />
     </div>
   );
