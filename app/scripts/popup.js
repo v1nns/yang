@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { isEmpty } from "lodash";
 
 import AppBar from "../scripts/ui/popup/appbar";
 import ChidTable from "../scripts/ui/popup/table";
@@ -28,6 +29,16 @@ function Popup() {
   }
 
   const fetchData = async () => {
+    // Dark Mode
+    const isDarkMode = await browser.storage.local
+      .get("darkMode")
+      .then((result) =>
+        !isEmpty(result.darkMode) ? JSON.parse(result.darkMode) : {}
+      );
+
+    setDarkMode(isDarkMode);
+
+    // Changes
     const result = await browser.runtime.sendMessage({ type: API.GET_DATA });
     setChanges(result.response);
   };
@@ -37,7 +48,9 @@ function Popup() {
   };
 
   const handleClickDarkMode = (e) => {
-    // TODO: save it into browser local storage
+    // save it into browser local storage
+    browser.storage.local.set({ darkMode: JSON.stringify(!darkMode) });
+
     setDarkMode(!darkMode);
   };
 
