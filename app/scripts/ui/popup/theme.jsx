@@ -63,7 +63,7 @@ const ThemeDark = {
 /* -------------------------------------------------------------------------- */
 
 const ThemeLight = {
-  foreground: "rgba(0,0,0,0.5)",
+  foreground: "rgba(0, 0, 0, 0.5)",
   appbar: {
     first: "rgb(52, 125, 190)",
     last: " rgb(92, 165, 220)",
@@ -88,14 +88,14 @@ createTheme("darkest", {
     default: ThemeDark.background,
   },
   context: {
-    background: "#E91E63",
-    text: "#FFFFFF",
+    background: "rgb(233, 30, 99)",
+    text: "rgb(255, 255, 255)",
   },
   divider: {
     default: "rgba(81, 81, 81, 1)",
   },
   button: {
-    default: "#FFFFFF",
+    default: "rgb(255, 255, 255)",
     focus: "rgba(255, 255, 255, .54)",
     hover: "rgba(255, 255, 255, .12)",
     disabled: "rgba(255, 255, 255, .18)",
@@ -104,16 +104,16 @@ createTheme("darkest", {
     default: "rgba(255, 255, 255, .54)",
   },
   selected: {
-    default: "rgba(0, 0, 0, .7)",
-    text: "#FFFFFF",
+    default: "rgba(65, 71, 79, .7)",
+    text: "rgb(255, 255, 255)",
   },
   highlightOnHover: {
-    default: "rgba(0, 0, 0, .2)",
-    text: "#FFFFFF",
+    default: "rgb(65, 71, 79)",
+    text: "rgb(255, 255, 255)",
   },
   striped: {
     default: "rgba(0, 0, 0, .87)",
-    text: "#FFFFFF",
+    text: "rgb(255, 255, 255)",
   },
 });
 

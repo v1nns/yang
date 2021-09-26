@@ -161,11 +161,21 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
 };
 /* -------------------------------------------------------------------------- */
 
-const ContextActions = (deleteHandler) => (
-  <IconButton color="secondary" onClick={deleteHandler}>
-    <Delete />
-  </IconButton>
-);
+const ContextActions = (dark, deleteHandler) => {
+  const classes = getButtonStyle(dark);
+  return (
+    <IconButton
+      color="secondary"
+      onClick={deleteHandler}
+      classes={{
+        root: classes.root,
+        disabled: classes.disabled,
+      }}
+    >
+      <Delete />
+    </IconButton>
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 
@@ -590,7 +600,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
         data={data}
         noDataComponent={EmptyData}
         actions={Actions(dark, disableButtons, addMode, selectMode)}
-        contextActions={ContextActions(deleteAll)}
+        contextActions={ContextActions(dark, deleteAll)}
         selectableRows={toggleSelection}
         clearSelectedRows={toggleCleared}
         onSelectedRowsChange={handleRowSelected}
