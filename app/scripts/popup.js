@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { isEmpty } from "lodash";
 
+import { ThemeDark } from "./ui/popup/theme";
+
 import AppBar from "../scripts/ui/popup/appbar";
 import ChidTable from "../scripts/ui/popup/table";
 
@@ -69,7 +71,12 @@ function Popup() {
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div
+      style={{
+        height: "100%",
+        ...(darkMode && { backgroundColor: ThemeDark.background }),
+      }}
+    >
       <AppBar
         onClickSettings={handleClickSettings}
         onClickDarkMode={handleClickDarkMode}
