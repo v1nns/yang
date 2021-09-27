@@ -70,7 +70,7 @@ const ThemeLight = {
   },
   table: {
     border: "rgba(0, 0, 0, .12)",
-    divider: "rgba(0, 0, 0, .12)",
+    divider: "rgba(0, 0, 0, .05)",
   },
 };
 

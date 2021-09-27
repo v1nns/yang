@@ -6,4 +6,8 @@ const Types = {
   REMOVE_CHANGES: "remove_changes",
 };
 
+export const Notifications = {
+  CHANGE_UPDATE: "notif_update",
+};
+
 export default Types;

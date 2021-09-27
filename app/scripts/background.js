@@ -1,7 +1,8 @@
 import { filter, isEmpty, isEqual, pick, remove } from "lodash";
 import axios from "axios";
-import API from "../scripts/api";
+import API, { Notifications } from "../scripts/api";
 
+// TODO: maybe remove this
 // browser.runtime.onInstalled.addListener((details) => {
 //   console.log("previousVersion", details.previousVersion);
 // });
@@ -53,6 +54,10 @@ function saveChangesToStorage(data) {
   browser.storage.local.set({ changes: JSON.stringify(data) });
 }
 
+/* -------------------------------------------------------------------------- */
+/*                               Gerrit-related                               */
+/* -------------------------------------------------------------------------- */
+
 async function queryOnGerrit(options, chid) {
   const url = `${options.endpoint}/changes/${chid}/detail`;
 
@@ -72,7 +77,7 @@ async function queryOnGerrit(options, chid) {
       .then((response) => (response.status == 200 ? response.data : {}));
   } catch (err) {
     console.log("chid:", chid, "err code:", err.response.status);
-    data = { id: chid, error: true };
+    data = { id: chid.toString(), error: true };
   }
 
   // Simply return empty
@@ -85,6 +90,8 @@ async function queryOnGerrit(options, chid) {
 
   return change;
 }
+
+/* ------ Get latest label entry (considering date value) in array list ----- */
 
 const filterLabel = (items) => {
   let value = 0,
@@ -104,13 +111,23 @@ const filterLabel = (items) => {
   return value;
 };
 
+/* ----------- Convert JSON object from REST API to custom object ----------- */
+
 function convertGerritData(raw) {
   const change = pick(raw, ["subject", "status"]);
   change.id = raw._number.toString();
+  change.verified = 0;
+  change.codeReview = 0;
 
-  // filter labels
-  change.verified = filterLabel(raw.labels["Verified"]["all"]);
-  change.codeReview = filterLabel(raw.labels["Code-Review"]["all"]);
+  // filter "Verified" label
+  if (raw.labels["Verified"]["all"] !== undefined) {
+    change.verified = filterLabel(raw.labels["Verified"]["all"]);
+  }
+
+  // filter "Code-Review" label
+  if (raw.labels["Code-Review"]["all"] !== undefined) {
+    change.codeReview = filterLabel(raw.labels["Code-Review"]["all"]);
+  }
 
   return change;
 }
@@ -156,7 +173,7 @@ async function addChange(request) {
   ];
 
   // enable update service
-  if (updated.length > 0) {
+  if (updated.length > 0 && polling === null) {
     polling = setInterval(service, 5000);
   }
 
@@ -173,6 +190,7 @@ async function removeChanges(request) {
 
   // disable update service
   if (updated.length == 0) {
+    clearInterval(polling);
     polling = null;
   }
 
@@ -181,7 +199,7 @@ async function removeChanges(request) {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               Update service                               */
+/*                               Update Service                               */
 /* -------------------------------------------------------------------------- */
 
 const service = async function () {
@@ -194,6 +212,7 @@ const service = async function () {
   if (!isConfigValid) {
     // TODO: send some kind of notification telling about this
     clearInterval(polling);
+    polling = null;
     return;
   }
 
@@ -218,6 +237,7 @@ const service = async function () {
   // Send events (if popup is open, it will receive it)
   if (updated.length > 0) {
     // In case there was any error, remove entry from cache
+    // TODO: maybe inform it through notification
     remove(changes, (c) => c.error === true);
 
     // Update storage
@@ -228,15 +248,27 @@ const service = async function () {
       text: `${updated.length}`,
     });
 
-    // Send message to popup
-    browser.runtime
-      .sendMessage({ type: API.UPDATE_DATA, data: updated })
-      .then(ignore, ignore);
+    const isPopupActive =
+      (await browser.extension.getViews({ type: "popup" }).length) > 0;
 
-    // TODO: send notification
+    if (isPopupActive) {
+      // Send message to popup
+      browser.runtime
+        .sendMessage({ type: API.UPDATE_DATA, data: updated })
+        .then(ignore, ignore);
+    } else {
+      // Display a notification informing about these updates
+      browser.notifications.create(Notifications.CHANGE_UPDATE, {
+        type: "basic",
+        priority: 1,
+        iconUrl: browser.runtime.getURL("images/icon-128.png"),
+        title: "Yet Another Notifier for Gerrit",
+        message: `Updated ${updated.length} change${
+          updated.length > 1 ? "s" : ""
+        }`,
+      });
+    }
   }
-
-  clearInterval(polling);
 };
 
 function ignore() {

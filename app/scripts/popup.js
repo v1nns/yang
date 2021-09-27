@@ -11,6 +11,7 @@ import API from "../scripts/api";
 
 function Popup() {
   const [changes, setChanges] = useState([]);
+  const [updated, setUpdated] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
 
   // Add/remove listener and fetch changes list from background script
@@ -24,8 +25,7 @@ function Popup() {
   function handleUpdate(request, sender) {
     console.log(`popup received a message: ${request.type}`);
     if (request.type == API.UPDATE_DATA) {
-      // TODO: set state, add another variable as state?
-      console.log("data", request.data);
+      setUpdated(request.data);
     }
     return false;
   }
@@ -84,6 +84,7 @@ function Popup() {
       />
       <ChidTable
         chids={changes}
+        updated={updated}
         onAddChange={handleAddChange}
         onRemoveChanges={handleRemoveChanges}
         dark={darkMode}

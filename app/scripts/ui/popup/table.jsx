@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import differenceBy from "lodash/differenceBy";
+import { differenceBy, findIndex } from "lodash";
 
 // Components
 import Grid from "@material-ui/core/Grid";
@@ -433,8 +433,17 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
 
   // Update animation
   useEffect(() => {
-    //TODO: change columns "codeReview", "verified" to a different value
-    //corresponding to a update, and add some kind of style in that column
+    //TODO: add some kind of animation...
+    for (const newValue of updated) {
+      const index = findIndex(data, { id: newValue.id });
+      if (!newValue.error) {
+        data[index] = { ...newValue, updated: true };
+      } else {
+        data.splice(index, 1);
+      }
+    }
+
+    setData([...data]);
   }, [updated]);
 
   // Add mode
@@ -463,7 +472,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     setEditingId("");
 
     const id = formData[item.id];
-    if (id == undefined) {
+    if (id == undefined || id === "") {
       // input didn't receive any event, just remove tmp entry from data
       data.shift();
     } else {
