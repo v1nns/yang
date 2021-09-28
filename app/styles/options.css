@@ -1,10 +1,15 @@
-/* Decrease Y-Axis value which Tooltip uses it to place itself on screen */
+/* decrease Y-Axis value which Tooltip uses it to place itself on screen */
 .MuiTooltip-tooltipPlacementBottom {
   margin: 12px 0px !important;
 }
 
-/* Change color here to match with other options
+/* change color here to match with other options
 TODO: find a better way to do this... */
 .MuiInputLabel-shrink {
   color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* remove any margin from html body */
+body {
+  margin: 0px !important;
 }

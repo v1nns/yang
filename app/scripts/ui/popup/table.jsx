@@ -72,22 +72,42 @@ const customStyles = (dark) => {
 /*                         Custom components for table                        */
 /* -------------------------------------------------------------------------- */
 
-const Title = (
-  <Typography variant="overline" style={{ fontSize: 14, fontWeight: 600 }}>
-    changes
-  </Typography>
-);
+const Title = (dark) => {
+  const themeStyle = dark
+    ? {
+        color: ThemeDark.foreground,
+      }
+    : {};
+
+  return (
+    <Typography
+      variant="overline"
+      style={{ fontSize: 14, fontWeight: 600, ...themeStyle }}
+    >
+      changes
+    </Typography>
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 
-const ColumnTitle = ({ title, hint }) => {
+const ColumnTitle = ({ title, hint, dark }) => {
   const ConditionalHint = ({ condition, children }) =>
     condition ? <Tooltip title={hint}>{children}</Tooltip> : children;
+
+  const themeStyle = dark
+    ? {
+        color: ThemeDark.foreground,
+      }
+    : {};
 
   const show = hint !== undefined;
   return (
     <ConditionalHint condition={show}>
-      <Typography variant="body2" style={{ fontSize: 14, fontWeight: 500 }}>
+      <Typography
+        variant="body2"
+        style={{ fontSize: 14, fontWeight: 500, ...themeStyle }}
+      >
         {title}
       </Typography>
     </ConditionalHint>
@@ -175,6 +195,23 @@ const ContextActions = (dark, deleteHandler) => {
       <Delete />
     </IconButton>
   );
+};
+
+/* -------------------------------------------------------------------------- */
+
+// TODO: TESTAR
+const Cell = (row) => {
+  const ConditionalFade = ({ condition, children }) =>
+    condition ? (
+      <Fade in={true} timeout={2000}>
+        {children}
+      </Fade>
+    ) : (
+      children
+    );
+
+  const show = row.updated === true;
+  return <ConditionalFade condition={show}>{row}</ConditionalFade>;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -296,6 +333,7 @@ const CustomTablePagination = ({
 }) => {
   // disable text selection
   const defaultStyle = { userSelect: "none" };
+  // TODO: improve this, maybe do something like "getButtonStyle"
   const themeStyle = dark
     ? {
         backgroundColor: ThemeDark.background,
@@ -303,8 +341,6 @@ const CustomTablePagination = ({
         borderTop: `2px solid ${ThemeDark.table.border}`,
       }
     : { borderTop: `2px solid ${ThemeLight.table.border}` };
-  // TODO: improve this, maybe do something like "getButtonStyle"
-  const style = Object.assign(defaultStyle, themeStyle);
 
   return (
     <TablePagination
@@ -320,7 +356,7 @@ const CustomTablePagination = ({
       ActionsComponent={(props) =>
         TablePaginationActions({ ...props, dark, disableButtons })
       }
-      style={style}
+      style={{ ...defaultStyle, ...themeStyle }}
     />
   );
 };
@@ -334,14 +370,14 @@ const rowStyle = (dark) => [
     when: (row) => row.status === "MERGED",
     style: {
       backgroundColor: Colors.status.ok,
-      color: dark ? ThemeDark.foreground : ThemeLight.foreground,
+      //   color: dark ? ThemeDark.foreground : ThemeLight.foreground,
     },
   },
   {
     when: (row) => row.verified === -1 || row.codeReview === -2,
     style: {
       backgroundColor: Colors.status.fail,
-      color: dark ? ThemeDark.foreground : ThemeLight.foreground,
+      //   color: dark ? ThemeDark.foreground : ThemeLight.foreground,
     },
   },
 ];
@@ -368,21 +404,21 @@ const columns = (dark) => {
 
   return [
     {
-      name: <ColumnTitle title="ID" hint="Change-Id" />,
+      name: <ColumnTitle title="ID" hint="Change-Id" dark={dark} />,
       selector: (row) => row.id,
       width: "75px",
       editable: true,
       style: { draggable: false },
     },
     {
-      name: <ColumnTitle title="Subject" />,
+      name: <ColumnTitle title="Subject" dark={dark} />,
       selector: (row) => row.subject,
       compact: true,
       wrap: true,
       style: { draggable: false },
     },
     {
-      name: <ColumnTitle title="CR" hint="Code-Review" />,
+      name: <ColumnTitle title="CR" hint="Code-Review" dark={dark} />,
       selector: (row) => row.codeReview,
       width: "30px",
       compact: true,
@@ -402,7 +438,7 @@ const columns = (dark) => {
       cell: (row) => <Label value={row.codeReview} />,
     },
     {
-      name: <ColumnTitle title="V" hint="Verified" />,
+      name: <ColumnTitle title="V" hint="Verified" dark={dark} />,
       selector: (row) => row.verified,
       width: "30px",
       compact: true,
@@ -604,7 +640,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   return (
     <div style={{ height: "300px" }}>
       <DataTable
-        title={Title}
+        title={Title(dark)}
         columns={createColumns}
         data={data}
         noDataComponent={EmptyData}

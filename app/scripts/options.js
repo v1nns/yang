@@ -26,9 +26,11 @@ function Options() {
         !isEmpty(result.options) ? JSON.parse(result.options) : {}
       );
 
-    setRefreshTime(data.refreshTime);
-    setEndpoint(data.endpoint);
-    setCredentials(data.credentials);
+    if (!isEmpty(data)) {
+      setRefreshTime(data.refreshTime);
+      setEndpoint(data.endpoint);
+      setCredentials(data.credentials);
+    }
   };
 
   const handleClickSave = (e) => {
@@ -38,7 +40,7 @@ function Options() {
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%", width: "100%" }}>
       <Grid
         container
         direction="column"

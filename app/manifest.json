@@ -24,7 +24,8 @@
   },
   "options_ui": {
     "page": "pages/options.html",
-    "chrome_style": true
+    "chrome_style": true,
+    "browser_style": true
   },
   "content_scripts": [
     {
@@ -43,6 +44,7 @@
     }
   ],
   "permissions": [
+    "<all_urls>",
     "notifications",
     "storage"
   ]

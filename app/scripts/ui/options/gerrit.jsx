@@ -20,6 +20,7 @@ function GerritConfig({
   onChangeEndpoint,
   onChangeCredentials,
 }) {
+  const { email, password } = credentials;
   return (
     <Grid container spacing={2} justifyContent="center">
       <Grid item xs={12}>
@@ -71,7 +72,7 @@ function GerritConfig({
                     <TextField
                       id="input-email"
                       label="Email address"
-                      value={credentials.email}
+                      value={email}
                       size="small"
                       inputProps={{ style: { fontSize: "0.9em" } }}
                       InputLabelProps={{
@@ -104,7 +105,7 @@ function GerritConfig({
                     <TextField
                       id="input-password"
                       label="HTTP password"
-                      value={credentials.password}
+                      value={password}
                       size="small"
                       inputProps={{ style: { fontSize: "0.9em" } }}
                       InputLabelProps={{ shrink: true }}

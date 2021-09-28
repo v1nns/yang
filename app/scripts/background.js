@@ -243,11 +243,6 @@ const service = async function () {
     // Update storage
     await saveChangesToStorage(changes);
 
-    // Set badge on extension icon
-    browser.browserAction.setBadgeText({
-      text: `${updated.length}`,
-    });
-
     const isPopupActive =
       (await browser.extension.getViews({ type: "popup" }).length) > 0;
 
@@ -257,6 +252,11 @@ const service = async function () {
         .sendMessage({ type: API.UPDATE_DATA, data: updated })
         .then(ignore, ignore);
     } else {
+      // Set badge on extension icon
+      browser.browserAction.setBadgeText({
+        text: `${updated.length}`,
+      });
+
       // Display a notification informing about these updates
       browser.notifications.create(Notifications.CHANGE_UPDATE, {
         type: "basic",

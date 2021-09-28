@@ -1,13 +1,23 @@
 .rdt_Table {
   /* this is not good, but didn't find another way to set a static fixed height
   for table body, specially when it has only a single chid entry */
-  height: 193px !important;
+  height: 205px !important;
 }
 
 /* remove arrow buttons from input number */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+  margin: 0;
+}
+
+/* fix for firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]:hover,
+input[type="number"]:focus {
+  -moz-appearance: number-input;
 }
 
 /* block text selection */
@@ -19,6 +29,11 @@ input[type="number"]::-webkit-outer-spin-button {
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* decrease Y-Axis value which Tooltip uses it to place itself on screen */
+.MuiTooltip-tooltipPlacementBottom {
+  margin: 12px 0px !important;
 }
 
 /* remove any margin from html body */

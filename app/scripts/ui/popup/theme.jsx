@@ -48,6 +48,7 @@ const Colors = {
 const ThemeDark = {
   background: "rgb(34, 39, 46)",
   foreground: "rgb(173, 186, 199)",
+  row: "rgb(118, 131, 144)",
   appbar: {
     first: "rgb(45, 51, 59)",
     last: "rgb(65, 71, 79)",
@@ -80,7 +81,7 @@ const ThemeLight = {
 
 createTheme("darkest", {
   text: {
-    primary: ThemeDark.foreground,
+    primary: ThemeDark.row,
     secondary: "rgb(255, 255, 255)",
     disabled: "rgba(0, 0, 0, .12)",
   },
