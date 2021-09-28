@@ -36,6 +36,13 @@ input[type="number"]:focus {
   margin: 12px 0px !important;
 }
 
+/* fix for tooltip when mouse hovers too fast over the children component,
+without this, it will fire on resize event of the iframe. In other words, an
+undesirable flickering effect in the UI =( */
+.MuiTooltip-popper {
+  top: 0;
+}
+
 /* remove any margin from html body */
 body {
   margin: 0px !important;

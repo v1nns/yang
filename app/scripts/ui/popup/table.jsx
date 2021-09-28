@@ -73,11 +73,9 @@ const customStyles = (dark) => {
 /* -------------------------------------------------------------------------- */
 
 const Title = (dark) => {
-  const themeStyle = dark
-    ? {
-        color: ThemeDark.foreground,
-      }
-    : {};
+  const themeStyle = {
+    ...(dark && { color: ThemeDark.foreground }),
+  };
 
   return (
     <Typography
@@ -95,11 +93,9 @@ const ColumnTitle = ({ title, hint, dark }) => {
   const ConditionalHint = ({ condition, children }) =>
     condition ? <Tooltip title={hint}>{children}</Tooltip> : children;
 
-  const themeStyle = dark
-    ? {
-        color: ThemeDark.foreground,
-      }
-    : {};
+  const themeStyle = {
+    ...(dark && { color: ThemeDark.foreground }),
+  };
 
   const show = hint !== undefined;
   return (
