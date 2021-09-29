@@ -145,6 +145,8 @@ function handleMessage(request, sender, sendResponse) {
       return addChange(request);
     case API.REMOVE_CHANGES:
       return removeChanges(request);
+    case API.TEST_ENDPOINT:
+      return testEndpoint(request);
   }
   return false;
 }
@@ -196,6 +198,14 @@ async function removeChanges(request) {
 
   saveChangesToStorage(updated);
   return true;
+}
+
+/* ------------------------ Get Changes from Storage ------------------------ */
+
+async function testEndpoint(request) {
+  // Query gerrit with this :
+  // https://gerrit-review.googlesource.com/Documentation/rest-api-documentation.html
+  return Promise.resolve({ response: false });
 }
 
 /* -------------------------------------------------------------------------- */

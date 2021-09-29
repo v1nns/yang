@@ -4,6 +4,7 @@ const Types = {
   UPDATE_DATA: "update_data",
   ADD_CHANGE: "add_change",
   REMOVE_CHANGES: "remove_changes",
+  TEST_ENDPOINT: "test_endpoint",
 };
 
 export const Notifications = {
