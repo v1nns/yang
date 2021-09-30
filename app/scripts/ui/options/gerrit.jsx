@@ -12,20 +12,24 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Person from "@material-ui/icons/PersonTwoTone";
 import Lock from "@material-ui/icons/LockTwoTone";
 
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 
-function GerritConfig({
-  endpoint,
-  credentials,
-  onChangeEndpoint,
-  onChangeCredentials,
-}) {
-  const { email, password } = credentials;
+/* -------------------------------------------------------------------------- */
+/*                        Custom components for config                        */
+/* -------------------------------------------------------------------------- */
+
+const Endpoint = ({ value, onChange }) => {
+  const title = browser.i18n.getMessage("optionsGerritTitle");
+  const label = browser.i18n.getMessage("optionsGerritEndpoint");
+
   return (
-    <Grid container spacing={2} justifyContent="center">
+    <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="body1" style={{ fontWeight: 700 }}>
-          Gerrit configuration
+        <Typography
+          variant="body1"
+          style={{ fontSize: "1.15rem", fontWeight: 700 }}
+        >
+          {title}
         </Typography>
         <Divider variant="fullWidth" />
       </Grid>
@@ -33,96 +37,118 @@ function GerritConfig({
       <Grid item xs={12}>
         <TextField
           id="input-endpoint"
-          label="Endpoint URL"
-          value={endpoint}
+          label={label}
+          value={value}
           size="small"
           // TODO: centralize these style props
-          inputProps={{ style: { fontSize: "0.9em" } }}
+          inputProps={{ style: { fontSize: "0.9rem" } }}
           InputLabelProps={{ shrink: true }}
-          onChange={(e) => onChangeEndpoint(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           fullWidth
         />
       </Grid>
+    </Grid>
+  );
+};
 
-      <Grid item xs={12}>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-            style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
-          >
-            <Typography variant="button" style={{ fontSize: "0.8rem" }}>
-              Credentials
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  spacing={1}
-                  alignItems="flex-end"
-                  justifyContent="center"
-                >
-                  <Grid item xs={1}>
-                    <Person />
-                  </Grid>
-                  <Grid item xs={11}>
-                    <TextField
-                      id="input-email"
-                      label="Email address"
-                      value={email}
-                      size="small"
-                      inputProps={{ style: { fontSize: "0.9em" } }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) =>
-                        // TODO: add email validation
-                        onChangeCredentials({
-                          ...credentials,
-                          email: e.target.value,
-                        })
-                      }
-                      fullWidth
-                    />
-                  </Grid>
-                </Grid>
+/* -------------------------------------------------------------------------- */
+
+const Credentials = ({ value, onChange }) => {
+  const { email, password } = value;
+
+  const title = browser.i18n.getMessage("optionsGerritCredentials");
+  const labelEmail = browser.i18n.getMessage("optionsGerritEmail");
+  const labelPassword = browser.i18n.getMessage("optionsGerritPassword");
+
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMore />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+        style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+      >
+        <Typography variant="button" style={{ fontSize: "0.9rem" }}>
+          {title}
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Grid container spacing={2} justifyContent="center">
+          <Grid item xs={12}>
+            <Grid container alignItems="flex-end" justifyContent="center">
+              <Grid item xs={1}>
+                <Person />
               </Grid>
-
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  spacing={1}
-                  alignItems="flex-end"
-                  justifyContent="center"
-                >
-                  <Grid item xs={1}>
-                    <Lock />
-                  </Grid>
-                  <Grid item xs={11}>
-                    <TextField
-                      id="input-password"
-                      label="HTTP password"
-                      value={password}
-                      size="small"
-                      inputProps={{ style: { fontSize: "0.9em" } }}
-                      InputLabelProps={{ shrink: true }}
-                      onChange={(e) =>
-                        onChangeCredentials({
-                          ...credentials,
-                          password: e.target.value,
-                        })
-                      }
-                      fullWidth
-                    />
-                  </Grid>
-                </Grid>
+              <Grid item xs={11}>
+                <TextField
+                  id="input-email"
+                  label={labelEmail}
+                  value={email}
+                  size="small"
+                  inputProps={{ style: { fontSize: "0.9em" } }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={(e) =>
+                    // TODO: add email validation
+                    onChange({
+                      ...value,
+                      email: e.target.value,
+                    })
+                  }
+                  fullWidth
+                />
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Grid container alignItems="flex-end" justifyContent="center">
+              <Grid item xs={1}>
+                <Lock />
+              </Grid>
+              <Grid item xs={11}>
+                <TextField
+                  id="input-password"
+                  label={labelPassword}
+                  value={password}
+                  size="small"
+                  inputProps={{ style: { fontSize: "0.9em" } }}
+                  InputLabelProps={{ shrink: true }}
+                  onChange={(e) =>
+                    onChange({
+                      ...value,
+                      password: e.target.value,
+                    })
+                  }
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+/* -------------------------------------------------------------------------- */
+/*                                Gerrit Config                               */
+/* -------------------------------------------------------------------------- */
+
+function GerritConfig({
+  endpoint,
+  credentials,
+  onChangeEndpoint,
+  onChangeCredentials,
+}) {
+  return (
+    <Grid container spacing={2} justifyContent="center">
+      <Grid item xs={12}>
+        <Endpoint value={endpoint} onChange={onChangeEndpoint} />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Credentials value={credentials} onChange={onChangeCredentials} />
       </Grid>
     </Grid>
   );

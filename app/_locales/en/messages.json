@@ -14,5 +14,33 @@
   "browserActionTitle": {
     "message": "Yet Another Notifier for Gerrit",
     "description": "The title of the browser action button"
+  },
+  "optionsGeneralTitle": {
+    "message": "General",
+    "description": "The title of the general configuration"
+  },
+  "optionsGeneralRefreshTime": {
+    "message": "Refresh time (seconds):",
+    "description": "The title of the refresh time configuration"
+  },
+  "optionsGerritTitle": {
+    "message": "Gerrit configuration",
+    "description": "The title of the gerrit configuration"
+  },
+  "optionsGerritEndpoint": {
+    "message": "Endpoint URL",
+    "description": "The title of the gerrit endpoint configuration"
+  },
+  "optionsGerritCredentials": {
+    "message": "Credentials",
+    "description": "The title of the gerrit credential configuration"
+  },
+  "optionsGerritEmail": {
+    "message": "Email address",
+    "description": "The title of the gerrit credential configuration for e-mail"
+  },
+  "optionsGerritPassword": {
+    "message": "HTTP password",
+    "description": "The title of the gerrit credential configuration for password"
   }
 }

@@ -6,22 +6,31 @@ import Slider from "@material-ui/core/Slider";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
+/* -------------------------------------------------------------------------- */
+/*                        Custom components for config                        */
+/* -------------------------------------------------------------------------- */
+
 const ValueLabelComponent = (props) => {
   const { children, value } = props;
-
-  return (
-    <Tooltip enterTouchDelay={0} title={value} arrow>
-      {children}
-    </Tooltip>
-  );
+  return <Tooltip title={value}>{children}</Tooltip>;
 };
 
+/* -------------------------------------------------------------------------- */
+/*                               General Config                               */
+/* -------------------------------------------------------------------------- */
+
 function GeneralConfig({ data, onChangeRefreshTime }) {
+  const title = browser.i18n.getMessage("optionsGeneralTitle");
+  const label = browser.i18n.getMessage("optionsGeneralRefreshTime");
+
   return (
     <Grid container spacing={2} justifyContent="center">
       <Grid item xs={12}>
-        <Typography variant="body1" style={{ fontWeight: 700 }}>
-          General
+        <Typography
+          variant="body1"
+          style={{ fontSize: "1.15rem", fontWeight: 700 }}
+        >
+          {title}
         </Typography>
         <Divider variant="fullWidth" />
       </Grid>
@@ -35,7 +44,7 @@ function GeneralConfig({ data, onChangeRefreshTime }) {
             padding: 0,
           }}
         >
-          Refresh time (seconds):
+          {label}
         </Typography>
       </Grid>
 

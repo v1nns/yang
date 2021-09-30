@@ -203,9 +203,33 @@ async function removeChanges(request) {
 /* ------------------------ Get Changes from Storage ------------------------ */
 
 async function testEndpoint(request) {
-  // Query gerrit with this :
-  // https://gerrit-review.googlesource.com/Documentation/rest-api-documentation.html
-  return Promise.resolve({ response: false });
+  const { endpoint, credentials } = request.data;
+  const url = `${endpoint}/config/server/version`;
+
+  let result = false;
+  try {
+    result = await axios
+      .get(
+        url,
+        {},
+        {
+          auth: {
+            username: credentials.email,
+            password: credentials.password,
+          },
+        }
+      )
+      .then((response) => (response.status == 200 ? true : false));
+  } catch (err) {
+    console.log(
+      "error testing endpoint",
+      endpoint,
+      "err code:",
+      err.response.status
+    );
+  }
+
+  return Promise.resolve({ response: result });
 }
 
 /* -------------------------------------------------------------------------- */
