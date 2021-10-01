@@ -42,5 +42,21 @@
   "optionsGerritPassword": {
     "message": "HTTP password",
     "description": "The title of the gerrit credential configuration for password"
+  },
+  "optionsMessageSaveSuccess": {
+    "message": "Configuration saved successfully!",
+    "description": "The title of the gerrit message for success"
+  },
+  "optionsMessageMissingConfig": {
+    "message": "Gerrit configuration is missing...",
+    "description": "The title of the gerrit message for missing configuration"
+  },
+  "optionsMessageTestSuccess": {
+    "message": "Gerrit API is working just fine!",
+    "description": "The title of the gerrit message for test success"
+  },
+  "optionsMessageTestFailed": {
+    "message": "FAIL! Gerrit API is not working, verify your configuration...",
+    "description": "The title of the gerrit message for test fail"
   }
 }
