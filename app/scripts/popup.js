@@ -14,11 +14,14 @@ function Popup() {
   const [updated, setUpdated] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
 
+  /* ------------------------------------------------------------------------ */
+  /*                             Load initial data                            */
+  /* ------------------------------------------------------------------------ */
+
   // Add/remove listener and fetch changes list from background script
   useEffect(() => {
     browser.runtime.onMessage.addListener(handleUpdate);
     fetchData();
-
     return () => browser.runtime.onMessage.removeListener(handleUpdate);
   }, []);
 
@@ -50,6 +53,10 @@ function Popup() {
     setChanges(result.response);
   };
 
+  /* ------------------------------------------------------------------------ */
+  /*                                 Handlers                                 */
+  /* ------------------------------------------------------------------------ */
+
   const handleClickSettings = (e) => {
     browser.runtime.openOptionsPage();
   };
@@ -70,6 +77,10 @@ function Popup() {
     browser.runtime.sendMessage({ type: API.REMOVE_CHANGES, data: ids });
   };
 
+  /* ------------------------------------------------------------------------ */
+  /*                                 Rendering                                */
+  /* ------------------------------------------------------------------------ */
+
   return (
     <div
       style={{
@@ -82,6 +93,7 @@ function Popup() {
         onClickDarkMode={handleClickDarkMode}
         dark={darkMode}
       />
+
       <ChidTable
         chids={changes}
         updated={updated}

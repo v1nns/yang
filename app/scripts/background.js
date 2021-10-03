@@ -221,12 +221,10 @@ async function testEndpoint(request) {
       )
       .then((response) => (response.status == 200 ? true : false));
   } catch (err) {
-    console.log(
-      "error testing endpoint",
-      endpoint,
-      "err code:",
-      err.response.status
-    );
+    console.log("error testing endpoint:", endpoint);
+    if (err.response !== undefined) {
+      console.log("err code:", err.response.status);
+    }
   }
 
   return Promise.resolve({ response: result });

@@ -457,13 +457,15 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   // Use change-id data from props
   const [data, setData] = useState(chids);
 
-  // First loading, simply update state for data
+  /* --------------------------- Load initial data -------------------------- */
+
   useEffect(() => {
     // TODO: maybe add some loading animation ?
     setData(chids);
   }, [chids]);
 
-  // Update animation
+  /* --------------------------- Update animation --------------------------- */
+
   useEffect(() => {
     //TODO: add some kind of animation...
     for (const newValue of updated) {
@@ -630,6 +632,10 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
       }),
     ];
   }, [dark, data, editingId]);
+
+  /* ------------------------------------------------------------------------ */
+  /*                                 Rendering                                */
+  /* ------------------------------------------------------------------------ */
 
   const disableButtons = editingId === 0 && !toggleSelection;
   const theme = dark ? "darkest" : "default";

@@ -2,30 +2,13 @@ import React, { useEffect, useState } from "react";
 import { isEmpty } from "lodash";
 import ReactDOM from "react-dom";
 
-import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-
-import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 
 import GerritConfig from "../scripts/ui/options/gerrit";
 import GeneralConfig from "../scripts/ui/options/general";
+import Actions from "../scripts/ui/options/actions";
 
 import API from "../scripts/api";
-
-const action = (handleClose) => (
-  <>
-    <IconButton
-      size="small"
-      aria-label="close"
-      color="inherit"
-      onClick={handleClose}
-    >
-      <CloseIcon fontSize="small" />
-    </IconButton>
-  </>
-);
 
 function Options() {
   // configs
@@ -68,15 +51,16 @@ function Options() {
     const data = { refreshTime, endpoint, credentials };
     browser.storage.local.set({ options: JSON.stringify(data) });
 
-    message = browser.i18n.getMessage("optionsMessageSaveSuccess");
-    setMessage(message);
+    let dummy = browser.i18n.getMessage("optionsMessageSaveSuccess");
+    setMessage(dummy);
     setOpen(true);
   };
 
   const handleClickTest = async (e) => {
+    let dummy = "";
     if (refreshTime == "" || endpoint == "" || credentials == "") {
-      message = browser.i18n.getMessage("optionsMessageMissingConfig");
-      setMessage(message);
+      dummy = browser.i18n.getMessage("optionsMessageMissingConfig");
+      setMessage(dummy);
       setOpen(true);
       return;
     }
@@ -88,12 +72,12 @@ function Options() {
     });
 
     if (result.response) {
-      message = browser.i18n.getMessage("optionsMessageTestSuccess");
+      dummy = browser.i18n.getMessage("optionsMessageTestSuccess");
     } else {
-      message = browser.i18n.getMessage("optionsMessageTestFailed");
+      dummy = browser.i18n.getMessage("optionsMessageTestFailed");
     }
 
-    setMessage(message);
+    setMessage(dummy);
     setOpen(true);
   };
 
@@ -104,6 +88,10 @@ function Options() {
 
     setOpen(false);
   };
+
+  /* ------------------------------------------------------------------------ */
+  /*                                 Rendering                                */
+  /* ------------------------------------------------------------------------ */
 
   return (
     <div style={{ height: "100%", width: "95%", margin: "auto" }}>
@@ -131,47 +119,13 @@ function Options() {
         </Grid>
       </Grid>
 
-      <div style={{ position: "absolute", bottom: 15, right: 15 }}>
-        <Snackbar
-          key={Math.random()}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          open={open}
-          autoHideDuration={5000}
-          ContentProps={{ color: "yellow" }}
-          message={message}
-          action={action(handleClose)}
-          onClose={handleClose}
-        />
-
-        <Grid container spacing={2}>
-          <Grid item>
-            <Button
-              style={{
-                color: "rgba(0, 0, 0, 0.7)",
-                width: "100px",
-              }}
-              onClick={handleClickTest}
-            >
-              Test
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              style={{
-                backgroundColor: "rgb(92, 165, 220)",
-                color: "rgb(255, 255, 255)",
-                width: "100px",
-              }}
-              onClick={handleClickSave}
-            >
-              Save
-            </Button>
-          </Grid>
-        </Grid>
-      </div>
+      <Actions
+        showMessage={open}
+        message={message}
+        onClickTest={handleClickTest}
+        onClickSave={handleClickSave}
+        onClose={handleClose}
+      />
     </div>
   );
 }
