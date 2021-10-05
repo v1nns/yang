@@ -43,6 +43,14 @@
     "message": "HTTP password",
     "description": "The title of the gerrit credential configuration for password"
   },
+  "optionsActionsTest": {
+    "message": "Test",
+    "description": "The title of the action button for testing endpoint"
+  },
+  "optionsActionsSave": {
+    "message": "Save",
+    "description": "The title of the action button for save configuration"
+  },
   "optionsMessageSaveSuccess": {
     "message": "Configuration saved successfully!",
     "description": "The title of the gerrit message for success"

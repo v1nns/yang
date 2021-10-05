@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/styles";
 import { createTheme } from "react-data-table-component";
 
 /* -------------------------------------------------------------------------- */
-/*                          Custom Colors for Button                          */
+/*                        Custom Colors for Icon Button                       */
 /* -------------------------------------------------------------------------- */
 
 const iconDark = {
