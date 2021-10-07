@@ -54,15 +54,44 @@ const getButtonStyle = () => {
 };
 
 /* -------------------------------------------------------------------------- */
+
+const getIconButtonStyle = () => {
+  const button = makeStyles({
+    root: {
+      "&.MuiIconButton-root": {
+        background: "transparent",
+        color: "white",
+        boxShadow: "unset",
+        fontSize: ".8em",
+      },
+      "&.MuiIconButton-root:hover": {
+        background: "transparent",
+        color: "white",
+        boxShadow: "unset",
+      },
+    },
+  })();
+
+  return button;
+};
+
+/* -------------------------------------------------------------------------- */
 /*                        Custom components for Actions                       */
 /* -------------------------------------------------------------------------- */
 
-// TODO: fix style on chrome before using it...
-const action = (handleClose) => (
-  <IconButton size="small" aria-label="close" onClick={handleClose}>
-    <CloseIcon fontSize="small" />
-  </IconButton>
-);
+const action = (handleClose) => {
+  const classes = getIconButtonStyle();
+  return (
+    <IconButton
+      classes={{ root: classes.root }}
+      size="small"
+      aria-label="close"
+      onClick={handleClose}
+    >
+      <CloseIcon fontSize="small" />
+    </IconButton>
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                   Actions                                  */
@@ -84,7 +113,7 @@ function Actions({ showMessage, message, onClickTest, onClickSave, onClose }) {
         open={showMessage}
         autoHideDuration={5000}
         message={message}
-        // action={action(onClose)}
+        action={action(onClose)}
         onClose={onClose}
       />
 

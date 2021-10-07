@@ -516,7 +516,6 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
         // TODO: maybe show some notification
         data.shift();
       } else {
-        // TODO: check if newValue is a valid number
         data[0].id = id;
         onAddChange(id);
       }
