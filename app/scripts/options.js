@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { isEmpty } from "lodash";
 import ReactDOM from "react-dom";
+
+import { isEmpty } from "lodash";
+import { isEmail } from "validator";
 
 import Grid from "@material-ui/core/Grid";
 
@@ -48,10 +50,18 @@ function Options() {
   /* ------------------------------------------------------------------------ */
 
   const handleClickSave = (e) => {
-    const data = { refreshTime, endpoint, credentials };
-    browser.storage.local.set({ options: JSON.stringify(data) });
+    let dummy = "";
+    if (endpoint == "") {
+      dummy = browser.i18n.getMessage("optionsMessageMissingConfig");
+    } else if (!isEmail(credentials.email)) {
+      dummy = browser.i18n.getMessage("optionsMessageInvalidEmail");
+    } else {
+      const data = { refreshTime, endpoint, credentials };
+      browser.storage.local.set({ options: JSON.stringify(data) });
 
-    let dummy = browser.i18n.getMessage("optionsMessageSaveSuccess");
+      dummy = browser.i18n.getMessage("optionsMessageSaveSuccess");
+    }
+
     setMessage(dummy);
     setOpen(true);
   };

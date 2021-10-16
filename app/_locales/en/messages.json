@@ -59,6 +59,10 @@
     "message": "Gerrit configuration is missing...",
     "description": "The title of the gerrit message for missing configuration"
   },
+  "optionsMessageInvalidEmail": {
+    "message": "Email address is not valid",
+    "description": "The title of the gerrit message for wrong email address"
+  },
   "optionsMessageTestSuccess": {
     "message": "Gerrit API is working just fine!",
     "description": "The title of the gerrit message for test success"

@@ -111,10 +111,14 @@ function Actions({ showMessage, message, onClickTest, onClickSave, onClose }) {
           horizontal: "left",
         }}
         open={showMessage}
-        autoHideDuration={5000}
+        autoHideDuration={4000}
         message={message}
         action={action(onClose)}
         onClose={onClose}
+        disableWindowBlurListener={true}
+        TransitionProps={{
+          appear: false,
+        }}
       />
 
       <Grid container spacing={2}>
