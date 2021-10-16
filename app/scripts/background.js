@@ -81,7 +81,9 @@ async function queryOnGerrit(options, chid) {
   }
 
   // Simply return empty
-  if (isEmpty(data) || data.error) return data;
+  if (isEmpty(data) || data.error) {
+    return data;
+  }
 
   // Otherwise, parse it
   const object = JSON.parse(data.toString().replace(")]}'", ""));

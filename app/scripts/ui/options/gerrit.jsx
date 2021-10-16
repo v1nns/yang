@@ -90,7 +90,6 @@ const Credentials = ({ value, onChange }) => {
                     shrink: true,
                   }}
                   onChange={(e) =>
-                    // TODO: add email validation
                     onChange({
                       ...value,
                       email: e.target.value,
