@@ -175,6 +175,7 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
     </div>
   );
 };
+
 /* -------------------------------------------------------------------------- */
 
 const ContextActions = (dark, deleteHandler) => {
@@ -195,29 +196,12 @@ const ContextActions = (dark, deleteHandler) => {
 
 /* -------------------------------------------------------------------------- */
 
-// TODO: TESTAR
-const Cell = (row) => {
-  const ConditionalFade = ({ condition, children }) =>
-    condition ? (
-      <Fade in={true} timeout={2000}>
-        {children}
-      </Fade>
-    ) : (
-      children
-    );
-
-  const show = row.updated === true;
-  return <ConditionalFade condition={show}>{row}</ConditionalFade>;
-};
-
-/* -------------------------------------------------------------------------- */
-
 const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
   const [name, setName] = useState("");
   const [value, setValue] = useState(column.selector(row));
 
   const handleChange = (e) => {
-    // remove leading zero and dot from input value
+    // Remove leading zero and dot from input value
     const nam = e.target.name;
     const val = String(e.target.value).replace(/\D|^0+/, "");
     setName(nam);
@@ -327,7 +311,7 @@ const CustomTablePagination = ({
   dark,
   disableButtons,
 }) => {
-  // disable text selection
+  // Disable text selection
   const defaultStyle = { userSelect: "none" };
   // TODO: improve this, maybe do something like "getButtonStyle"
   const themeStyle = dark
@@ -376,6 +360,13 @@ const rowStyle = (dark) => [
       //   color: dark ? ThemeDark.foreground : ThemeLight.foreground,
     },
   },
+  {
+    when: (row) => row.updated === true,
+    style: {
+      animationName: "grayfade",
+      animationDuration: "1.5s",
+    },
+  },
 ];
 
 const labelStyle = (name) => [
@@ -422,7 +413,7 @@ const columns = (dark) => {
       style: {
         userSelect: "none",
         draggable: false,
-        // Add manually borders around this label
+        // Add manually side borders around this label
         borderLeftStyle: "solid",
         borderLeftWidth: "1px",
         borderLeftColor: dividerColor,
@@ -467,7 +458,6 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   /* --------------------------- Update animation --------------------------- */
 
   useEffect(() => {
-    //TODO: add some kind of animation...
     for (const newValue of updated) {
       const index = findIndex(data, { id: newValue.id });
       if (!newValue.error) {
@@ -480,13 +470,15 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     setData([...data]);
   }, [updated]);
 
+  /* ----------------------------- Context modes ---------------------------- */
+
   // Add mode
   const [editingId, setEditingId] = useState("");
 
   // Selection mode
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  // Toggle stuff to update UI
+  // Update UI by toggling stuff
   const [toggleSelection, setToggleSelection] = useState(false);
   const [toggleCleared, setToggleCleared] = useState(false);
   const [toggleResetPagination, setToggleResetPagination] = useState(false);
@@ -507,12 +499,12 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
 
     const id = formData[item.id];
     if (id == undefined || id === "") {
-      // input didn't receive any event, just remove tmp entry from data
+      // Input didn't receive any event, just remove tmp entry from data
       data.shift();
     } else {
       const exists = data.find((change) => change.id === id);
       if (exists != undefined) {
-        // change-id already exists, just remove tmp entry from data
+        // Change-id already exists, just remove tmp entry from data
         // TODO: maybe show some notification
         data.shift();
       } else {
@@ -527,7 +519,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   const cancel = () => {
     setEditingId("");
 
-    // remove first entry, which contains id = 0
+    // Remove first entry, which contains id = 0
     data.shift();
     setData([...data]);
   };
@@ -554,7 +546,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     onRemoveChanges(removedIds);
   };
 
-  /* --------- create handler to update input field on change events -------- */
+  /* --------- Create handler to update input field on change events -------- */
 
   const isEditing = (record) => record.id === editingId;
   let formData = useRef({}).current;
@@ -566,7 +558,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     };
   };
 
-  /* ---------- create actions and input field for 'editable' cell ---------- */
+  /* ---------- Create actions and input field for 'editable' cell ---------- */
 
   const createColumns = useMemo(() => {
     const rowActions = [

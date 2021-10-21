@@ -47,3 +47,13 @@ undesirable flickering effect in the UI =( */
 body {
   margin: 0px !important;
 }
+
+/* this animation is also known as "Yellow Fade Effect" but right here "gray" is the chosen one */
+@keyframes grayfade {
+  from {
+    background: gray;
+  }
+  to {
+    background: transparent;
+  }
+}
