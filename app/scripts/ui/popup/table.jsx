@@ -461,7 +461,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     for (const newValue of updated) {
       const index = findIndex(data, { id: newValue.id });
       if (!newValue.error) {
-        data[index] = { ...newValue, updated: true };
+        data[index] = newValue;
       } else {
         data.splice(index, 1);
       }

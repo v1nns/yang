@@ -57,6 +57,7 @@ function Options() {
       dummy = browser.i18n.getMessage("optionsMessageInvalidEmail");
     } else {
       const data = { refreshTime, endpoint, credentials };
+      // TODO: send it to background service to restart service
       browser.storage.local.set({ options: JSON.stringify(data) });
 
       dummy = browser.i18n.getMessage("optionsMessageSaveSuccess");

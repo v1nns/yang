@@ -17,7 +17,12 @@ async function init() {
   const data = await getChangesFromStorage();
   if (data.length > 0) {
     console.log("initializing update service");
-    polling = setInterval(service, 5000);
+
+    const options = await getOptionsFromStorage();
+    if (options.refreshTime !== undefined) {
+      service();
+      polling = setInterval(service, options.refreshTime);
+    }
   }
 }
 
@@ -42,6 +47,18 @@ function getChangesFromStorage() {
     );
 }
 
+function getUpdatedChangesFromStorage() {
+  const updated = browser.storage.local
+    .get("updated")
+    .then((result) =>
+      !isEmpty(result.updated) ? JSON.parse(result.updated) : []
+    );
+
+  // Just clear it
+  saveUpdatedChangesToStorage(null);
+  return updated;
+}
+
 function getOptionsFromStorage() {
   return browser.storage.local
     .get("options")
@@ -52,6 +69,12 @@ function getOptionsFromStorage() {
 
 function saveChangesToStorage(data) {
   browser.storage.local.set({ changes: JSON.stringify(data) });
+}
+
+function saveUpdatedChangesToStorage(data) {
+  browser.storage.local.set({
+    updated: data !== null ? JSON.stringify(data) : [],
+  });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -159,7 +182,12 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 async function getChanges() {
   const changes = await getChangesFromStorage();
-  return Promise.resolve({ response: changes });
+  const updated = await getUpdatedChangesFromStorage();
+
+  let ids = new Set(updated.map((d) => d.id));
+  let merged = [...updated, ...changes.filter((d) => !ids.has(d.id))];
+
+  return Promise.resolve({ response: merged });
 }
 
 /* ------------------------ Add new Change to Storage ----------------------- */
@@ -205,6 +233,7 @@ async function removeChanges(request) {
 /* ------------------------ Get Changes from Storage ------------------------ */
 
 async function testEndpoint(request) {
+  console.log(`testEndpoint received data: ${request.data}`);
   const { endpoint, credentials } = request.data;
   const url = `${endpoint}/config/server/version`;
 
@@ -264,11 +293,11 @@ const service = async function () {
 
     if (result.error || !isEqual(elem, result)) {
       changes[index] = result;
-      updated.push(result);
+      updated.push({ ...result, updated: true });
     }
   }
 
-  // Send events (if popup is open, it will receive it)
+  // Save data and send message (if popup is open)
   if (updated.length > 0) {
     // In case there was any error, remove entry from cache
     // TODO: maybe inform it through notification
@@ -286,6 +315,10 @@ const service = async function () {
         .sendMessage({ type: API.UPDATE_DATA, data: updated })
         .then(ignore, ignore);
     } else {
+      // Save these updated changes in a different object, so the user can
+      // distinguish it when popup is opened
+      await saveUpdatedChangesToStorage(updated);
+
       // Set badge on extension icon
       browser.browserAction.setBadgeText({
         text: `${updated.length}`,
