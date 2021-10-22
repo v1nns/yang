@@ -4,6 +4,11 @@
   height: 205px !important;
 }
 
+.rdt_TableCell {
+    /* same comment from the element before applies here */
+    height: 34px !important;
+}
+
 /* remove arrow buttons from input number */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -48,10 +53,21 @@ body {
   margin: 0px !important;
 }
 
-/* this animation is also known as "Yellow Fade Effect" but right here "gray" is the chosen one */
+/* this animation is also known as "Yellow Fade Effect" but right here "gray" is
+the chosen one */
 @keyframes grayfade {
   from {
     background: gray;
+  }
+  to {
+    background: transparent;
+  }
+}
+
+/* fade for chid deletion */
+@keyframes redfade {
+  from {
+    background: red;
   }
   to {
     background: transparent;

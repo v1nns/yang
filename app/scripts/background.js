@@ -21,7 +21,7 @@ async function init() {
     const options = await getOptionsFromStorage();
     if (options.refreshTime !== undefined) {
       service();
-      polling = setInterval(service, options.refreshTime);
+      polling = setInterval(service, options.refreshTime * 1000);
     }
   }
 }
@@ -206,7 +206,11 @@ async function addChange(request) {
 
   // enable update service
   if (updated.length > 0 && polling === null) {
-    polling = setInterval(service, 5000);
+    const options = await getOptionsFromStorage();
+    if (options.refreshTime !== undefined) {
+      service();
+      polling = setInterval(service, options.refreshTime * 1000);
+    }
   }
 
   saveChangesToStorage(updated);
@@ -335,6 +339,13 @@ const service = async function () {
         }`,
       });
     }
+  }
+
+  // If there is no more chid to query, must disable the service
+  const noChidToQuery = changes.every((obj) => obj.status === "MERGED");
+  if (noChidToQuery) {
+    clearInterval(polling);
+    polling = null;
   }
 };
 

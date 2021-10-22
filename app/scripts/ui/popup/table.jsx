@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { differenceBy, findIndex } from "lodash";
+import { differenceBy, findIndex, merge, remove } from "lodash";
 
 // Components
 import Grid from "@material-ui/core/Grid";
@@ -364,7 +364,14 @@ const rowStyle = (dark) => [
     when: (row) => row.updated === true,
     style: {
       animationName: "grayfade",
-      animationDuration: "1.5s",
+      animationDuration: "2s",
+    },
+  },
+  {
+    when: (row) => row.error === true,
+    style: {
+      animationName: "redfade",
+      animationDuration: "2s",
     },
   },
 ];
@@ -448,26 +455,69 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   // Use change-id data from props
   const [data, setData] = useState(chids);
 
+  // Disable any action/ctx-action or button during update/delete animation
+  const [disableActions, setDisableActions] = useState(false);
+
   /* --------------------------- Load initial data -------------------------- */
 
   useEffect(() => {
     // TODO: maybe add some loading animation ?
-    setData(chids);
+    if (chids.length > 0) {
+      setData([...chids]);
+
+      const showAnimation = chids.some(
+        (obj) => obj.updated === true || obj.error === true
+      );
+
+      if (showAnimation) {
+        setDisableActions(true);
+
+        setTimeout(() => {
+          remove(chids, (obj) => obj.error === true);
+
+          for (const [index, elem] of chids.entries()) {
+            if (elem.updated === true) {
+              chids[index].updated = false;
+            }
+          }
+
+          setData([...chids]);
+          setDisableActions(false);
+        }, 2000);
+      }
+    }
   }, [chids]);
 
   /* --------------------------- Update animation --------------------------- */
 
   useEffect(() => {
-    for (const newValue of updated) {
-      const index = findIndex(data, { id: newValue.id });
-      if (!newValue.error) {
-        data[index] = newValue;
-      } else {
-        data.splice(index, 1);
-      }
-    }
+    if (updated.length > 0) {
+      let updateId = [],
+        removeId = [];
 
-    setData([...data]);
+      // Just update data
+      for (const newValue of updated) {
+        const index = findIndex(data, { id: newValue.id });
+        data[index] = newValue;
+
+        if (newValue.error) {
+          removeId.push(newValue.id);
+        } else {
+          updateId.push({ id: newValue.id, updated: false });
+        }
+      }
+
+      setDisableActions(true);
+      setData([...data]);
+
+      setTimeout(() => {
+        remove(data, (obj) => removeId.includes(obj.id));
+        merge(data, updateId);
+
+        setData([...data]);
+        setDisableActions(false);
+      }, 2000);
+    }
   }, [updated]);
 
   /* ----------------------------- Context modes ---------------------------- */
@@ -628,7 +678,8 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   /*                                 Rendering                                */
   /* ------------------------------------------------------------------------ */
 
-  const disableButtons = editingId === 0 && !toggleSelection;
+  const disableButtons =
+    (editingId === 0 && !toggleSelection) || disableActions;
   const theme = dark ? "darkest" : "default";
   return (
     <div style={{ height: "300px" }}>
