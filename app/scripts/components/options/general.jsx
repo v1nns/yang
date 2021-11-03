@@ -1,5 +1,7 @@
 import React from "react";
 
+import { makeStyles } from "@material-ui/styles";
+
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
@@ -9,6 +11,18 @@ import Typography from "@material-ui/core/Typography";
 /* -------------------------------------------------------------------------- */
 /*                        Custom components for config                        */
 /* -------------------------------------------------------------------------- */
+
+function getSliderStyle() {
+  const useStyles = makeStyles({
+    root: {
+      "&.MuiSlider-root": {
+        color: "rgb(92, 165, 220)",
+      },
+    },
+  });
+
+  return useStyles();
+}
 
 const ValueLabelComponent = (props) => {
   const { children, value } = props;
@@ -22,6 +36,8 @@ const ValueLabelComponent = (props) => {
 function GeneralConfig({ data, onChangeRefreshTime }) {
   const title = browser.i18n.getMessage("optionsGeneralTitle");
   const label = browser.i18n.getMessage("optionsGeneralRefreshTime");
+
+  const slider = getSliderStyle();
 
   return (
     <Grid container spacing={2} justifyContent="center">
@@ -51,6 +67,7 @@ function GeneralConfig({ data, onChangeRefreshTime }) {
       <Grid item xs={11}>
         <Slider
           aria-label="RefreshTime"
+          classes={{ root: slider.root }}
           value={data}
           onChange={(e, val) => onChangeRefreshTime(val)}
           valueLabelDisplay="auto"

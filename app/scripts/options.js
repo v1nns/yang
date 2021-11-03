@@ -6,11 +6,11 @@ import { isEmail } from "validator";
 
 import Grid from "@material-ui/core/Grid";
 
-import GerritConfig from "../scripts/ui/options/gerrit";
-import GeneralConfig from "../scripts/ui/options/general";
-import Actions from "../scripts/ui/options/actions";
+import GerritConfig from "./components/options/gerrit";
+import GeneralConfig from "./components/options/general";
+import Actions from "./components/options/actions";
 
-import API from "../scripts/api";
+import API from "./api";
 
 function Options() {
   // configs

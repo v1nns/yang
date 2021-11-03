@@ -402,14 +402,14 @@ const columns = (dark) => {
       selector: (row) => row.id,
       width: "75px",
       editable: true,
-      style: { draggable: false },
+      style: { userSelect: "none", draggable: false },
     },
     {
       name: <ColumnTitle title="Subject" dark={dark} />,
       selector: (row) => row.subject,
       compact: true,
       wrap: true,
-      style: { draggable: false },
+      style: { userSelect: "none", draggable: false },
     },
     {
       name: <ColumnTitle title="CR" hint="Code-Review" dark={dark} />,

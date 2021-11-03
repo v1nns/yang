@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { isEmpty } from "lodash";
 
-import { ThemeDark } from "./ui/popup/theme";
+import { ThemeDark } from "./components/popup/theme";
 
-import AppBar from "../scripts/ui/popup/appbar";
-import ChidTable from "../scripts/ui/popup/table";
+import AppBar from "./components/popup/appbar";
+import ChidTable from "./components/popup/table";
 
-import API from "../scripts/api";
+import API from "./api";
 
 function Popup() {
   const [changes, setChanges] = useState([]);
