@@ -490,6 +490,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
 
   /* --------------------------- Update animation --------------------------- */
 
+  // TODO: fix bug update while in add mode
   useEffect(() => {
     if (updated.length > 0) {
       let updateId = [],

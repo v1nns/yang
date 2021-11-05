@@ -5,13 +5,15 @@ import { createTheme } from "react-data-table-component";
 /*                        Custom Colors for Icon Button                       */
 /* -------------------------------------------------------------------------- */
 
-const iconDark = {
+const darkTheme = {
   colorActive: "rgb(173, 186, 199)",
+  bgHover: "rgba(255, 255, 255, 0.1)",
   colorDisabled: "rgb(65, 71, 79)",
 };
 
-const iconLight = {
+const lightTheme = {
   colorActive: "rgb(65, 71, 79)",
+  bgHover: "rgba(0, 0, 0, 0.04)",
   colorDisabled: "rgba(0, 0, 0, .26)",
 };
 
@@ -22,13 +24,16 @@ export function getButtonStyle(dark) {
       "&.MuiIconButton-root": {
         color: (props) => props.colorActive,
       },
+      "&.MuiIconButton-root:hover": {
+        background: (props) => props.bgHover,
+      },
       "&.Mui-disabled": {
         color: (props) => props.colorDisabled,
       },
     },
   });
 
-  return dark ? useStyles(iconDark) : useStyles(iconLight);
+  return dark ? useStyles(darkTheme) : useStyles(lightTheme);
 }
 
 /* -------------------------------------------------------------------------- */
