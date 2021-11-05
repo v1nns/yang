@@ -18,7 +18,6 @@ const lightTheme = {
 };
 
 export function getButtonStyle(dark) {
-  //TODO: change ripple color on dark mode
   const useStyles = makeStyles({
     root: {
       "&.MuiIconButton-root": {

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { differenceBy, findIndex, merge, remove } from "lodash";
+import { differenceBy, findIndex, keyBy, merge, remove, values } from "lodash";
 
 // Components
 import Grid from "@material-ui/core/Grid";
@@ -490,7 +490,6 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
 
   /* --------------------------- Update animation --------------------------- */
 
-  // TODO: fix bug update while in add mode
   useEffect(() => {
     if (updated.length > 0) {
       let updateId = [],
@@ -513,9 +512,11 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
 
       setTimeout(() => {
         remove(data, (obj) => removeId.includes(obj.id));
-        merge(data, updateId);
 
-        setData([...data]);
+        let merged = merge(keyBy(data, "id"), keyBy(updateId, "id"));
+        merged = values(merged);
+
+        setData([...merged]);
         setDisableActions(false);
       }, 2000);
     }
