@@ -56,9 +56,12 @@ function Options() {
     } else if (!isEmail(credentials.email)) {
       dummy = browser.i18n.getMessage("optionsMessageInvalidEmail");
     } else {
+      // Save new config in storage
       const data = { refreshTime, endpoint, credentials };
-      // TODO: send it to background service to restart service
       browser.storage.local.set({ options: JSON.stringify(data) });
+
+      // Inform background script to restart service using this new config
+      browser.runtime.sendMessage({ type: API.RESTART_SERVICE });
 
       dummy = browser.i18n.getMessage("optionsMessageSaveSuccess");
     }

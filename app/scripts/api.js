@@ -5,6 +5,7 @@ const Types = {
   ADD_CHANGE: "add_change",
   REMOVE_CHANGES: "remove_changes",
   TEST_ENDPOINT: "test_endpoint",
+  RESTART_SERVICE: "restart_service",
 };
 
 export const Notifications = {

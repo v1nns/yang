@@ -11,18 +11,13 @@ import API, { Notifications } from "../scripts/api";
 /*                               Initialization                               */
 /* -------------------------------------------------------------------------- */
 
-var polling = null;
+var polling = null,
+  restart = false;
 
 async function init() {
   const data = await getChangesFromStorage();
   if (data.length > 0) {
-    console.log("initializing update service");
-
-    const options = await getOptionsFromStorage();
-    if (options.refreshTime !== undefined) {
-      service();
-      polling = setInterval(service, options.refreshTime * 1000);
-    }
+    startService();
   }
 }
 
@@ -31,6 +26,30 @@ init();
 /* -------------------------------------------------------------------------- */
 /*                                    Utils                                   */
 /* -------------------------------------------------------------------------- */
+
+async function startService() {
+  console.log("initializing update service");
+  const options = await getOptionsFromStorage();
+  if (options.refreshTime !== undefined) {
+    service();
+    polling = setInterval(service, options.refreshTime * 1000);
+  }
+}
+
+function stopService() {
+  console.log("stopping update service");
+  clearInterval(polling);
+  polling = null;
+  restart = false;
+}
+
+function restartService() {
+  console.log("restarting update service");
+  stopService();
+  startService();
+}
+
+/* ----------------------------- Browser-related ---------------------------- */
 
 function clear() {
   browser.browserAction.setBadgeText({
@@ -172,6 +191,8 @@ function handleMessage(request, sender, sendResponse) {
       return removeChanges(request);
     case API.TEST_ENDPOINT:
       return testEndpoint(request);
+    case API.RESTART_SERVICE:
+      return triggerRestartService();
   }
   return false;
 }
@@ -226,8 +247,7 @@ async function removeChanges(request) {
 
   // disable update service
   if (updated.length == 0) {
-    clearInterval(polling);
-    polling = null;
+    stopService();
   }
 
   saveChangesToStorage(updated);
@@ -265,6 +285,17 @@ async function testEndpoint(request) {
   return Promise.resolve({ response: result });
 }
 
+/* ------------------------- Restart Update Service ------------------------- */
+
+async function triggerRestartService() {
+  console.log(`restartService called`);
+  if (polling != null) {
+    restart = true;
+  }
+
+  return true;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                               Update Service                               */
 /* -------------------------------------------------------------------------- */
@@ -278,8 +309,7 @@ const service = async function () {
 
   if (!isConfigValid) {
     // TODO: send some kind of notification telling about this
-    clearInterval(polling);
-    polling = null;
+    stopService();
     return;
   }
 
@@ -288,6 +318,11 @@ const service = async function () {
 
   // Query on gerrit
   for (const [index, elem] of changes.entries()) {
+    if (restart) {
+      restartService();
+      return;
+    }
+
     // Do not query if status is merged
     if (elem.status === "MERGED") {
       continue;
@@ -299,6 +334,11 @@ const service = async function () {
       changes[index] = result;
       updated.push({ ...result, updated: true });
     }
+  }
+
+  if (restart) {
+    restartService();
+    return;
   }
 
   // Save data and send message (if popup is open)
@@ -344,8 +384,7 @@ const service = async function () {
   // If there is no more chid to query, must disable the service
   const noChidToQuery = changes.every((obj) => obj.status === "MERGED");
   if (noChidToQuery) {
-    clearInterval(polling);
-    polling = null;
+    stopService();
   }
 };
 
