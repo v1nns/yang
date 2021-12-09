@@ -302,12 +302,12 @@ async function triggerRestartService() {
 
 const service = async function () {
   const options = await getOptionsFromStorage();
-  const isConfigValid =
+  const existsConfig =
     options.endpoint.length > 0 &&
     options.credentials.email.length > 0 &&
     options.credentials.password.length > 0;
 
-  if (!isConfigValid) {
+  if (!existsConfig) {
     // TODO: send some kind of notification telling about this
     stopService();
     return;

@@ -684,7 +684,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
     (editingId === 0 && !toggleSelection) || disableActions;
   const theme = dark ? "darkest" : "default";
   return (
-    <div style={{ height: "300px" }}>
+    <div aria-label="table" style={{ height: "300px" }}>
       <DataTable
         title={Title(dark)}
         columns={createColumns}
