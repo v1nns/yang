@@ -6,6 +6,7 @@ const Types = {
   REMOVE_CHANGES: "remove_changes",
   TEST_ENDPOINT: "test_endpoint",
   RESTART_SERVICE: "restart_service",
+  EXISTS_CONFIG: "config_exists",
 };
 
 export const Notifications = {

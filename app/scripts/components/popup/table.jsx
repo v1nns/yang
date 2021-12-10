@@ -146,6 +146,7 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
     <div>
       <Tooltip title="Add Change-Id">
         <IconButton
+          aria-label="tableaction"
           color="primary"
           size="small"
           onClick={addHandler}
@@ -160,6 +161,7 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
       </Tooltip>
       <Tooltip title="Toggle selection">
         <IconButton
+          aria-label="tableaction"
           color="primary"
           size="small"
           onClick={selectionHandler}
@@ -182,6 +184,7 @@ const ContextActions = (dark, deleteHandler) => {
   const classes = getButtonStyle(dark);
   return (
     <IconButton
+      aria-label="deletechanges"
       color="secondary"
       onClick={deleteHandler}
       classes={{
@@ -220,6 +223,7 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
     return (
       <Fade in={true} timeout={900}>
         <input
+          aria-label="inputchange"
           type={typeof column.selector(row) || "text"}
           name={column.selector(row)}
           style={{ width: "100%" }}
@@ -448,7 +452,14 @@ const columns = (dark) => {
 /*                            Table for Change-Ids                            */
 /* -------------------------------------------------------------------------- */
 
-function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
+function ChidTable({
+  dark,
+  chids,
+  updated,
+  disabled,
+  onAddChange,
+  onRemoveChanges,
+}) {
   // Constants
   const [maxEntriesPerPage] = useState(5);
 
@@ -627,6 +638,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
               <Fade in={true} timeout={900}>
                 <div style={{ width: "100%" }}>
                   <IconButton
+                    aria-label="savechange"
                     color="primary"
                     size="small"
                     style={{ color: Colors.label.ok }}
@@ -635,6 +647,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
                     <Done fontSize="inherit" />
                   </IconButton>
                   <IconButton
+                    aria-label="discardchange"
                     color="secondary"
                     size="small"
                     style={{ color: Colors.label.fail }}
@@ -681,7 +694,7 @@ function ChidTable({ dark, chids, updated, onAddChange, onRemoveChanges }) {
   /* ------------------------------------------------------------------------ */
 
   const disableButtons =
-    (editingId === 0 && !toggleSelection) || disableActions;
+    (editingId === 0 && !toggleSelection) || disableActions || disabled;
   const theme = dark ? "darkest" : "default";
   return (
     <div aria-label="table" style={{ height: "300px" }}>

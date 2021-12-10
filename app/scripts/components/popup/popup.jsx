@@ -11,6 +11,7 @@ import API from "../../api";
 function Popup() {
   const [changes, setChanges] = useState([]);
   const [updated, setUpdated] = useState([]);
+  const [disabled, setDisabled] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   /* ------------------------------------------------------------------------ */
@@ -46,6 +47,12 @@ function Popup() {
       );
 
     setDarkMode(isDarkMode);
+
+    // Check if config exists
+    const existsConfig = await browser.runtime.sendMessage({
+      type: API.EXISTS_CONFIG,
+    });
+    setDisabled(!existsConfig.response);
 
     // Changes
     const result = await browser.runtime.sendMessage({ type: API.GET_DATA });
@@ -100,6 +107,7 @@ function Popup() {
         onAddChange={handleAddChange}
         onRemoveChanges={handleRemoveChanges}
         dark={darkMode}
+        disabled={disabled}
       />
     </div>
   );

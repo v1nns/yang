@@ -96,6 +96,18 @@ function saveUpdatedChangesToStorage(data) {
   });
 }
 
+async function isConfigSet() {
+  // TODO: maybe change this for something like "validateConfig"
+  const options = await getOptionsFromStorage();
+  const existsConfig =
+    !isEmpty(options) &&
+    options.endpoint.length > 0 &&
+    options.credentials.email.length > 0 &&
+    options.credentials.password.length > 0;
+
+  return existsConfig;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                               Gerrit-related                               */
 /* -------------------------------------------------------------------------- */
@@ -193,6 +205,8 @@ function handleMessage(request, sender, sendResponse) {
       return testEndpoint(request);
     case API.RESTART_SERVICE:
       return triggerRestartService();
+    case API.EXISTS_CONFIG:
+      return existsConfig();
   }
   return false;
 }
@@ -296,23 +310,28 @@ async function triggerRestartService() {
   return true;
 }
 
+/* --------------------- Get info about Config existence -------------------- */
+
+async function existsConfig() {
+  console.log(`existsConfig called`);
+  const result = await isConfigSet();
+
+  return Promise.resolve({ response: result });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                               Update Service                               */
 /* -------------------------------------------------------------------------- */
 
 const service = async function () {
-  const options = await getOptionsFromStorage();
-  const existsConfig =
-    options.endpoint.length > 0 &&
-    options.credentials.email.length > 0 &&
-    options.credentials.password.length > 0;
-
+  const existsConfig = await isConfigSet();
   if (!existsConfig) {
     // TODO: send some kind of notification telling about this
     stopService();
     return;
   }
 
+  let options = await getOptionsFromStorage();
   let changes = await getChangesFromStorage();
   let updated = [];
 
