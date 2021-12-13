@@ -312,4 +312,110 @@ describe("popup with chids", () => {
       "Add a Change-Id and it will show up here."
     );
   });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("add a new change and receive a success update", async () => {
+    render(<Popup />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("tableaction"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
+
+    const dummy = {
+      subject: "Some dummy change here",
+      status: "NEW",
+      id: "223344",
+      verified: 1,
+      codeReview: 1,
+    };
+
+    // Simulate a message from background and wait for state update on popup
+    await waitFor(() => {
+      browser.runtime.sendMessage({ type: API.UPDATE_DATA, data: [dummy] });
+      expectMessage(API.UPDATE_DATA, [dummy]);
+    });
+
+    const rows = screen.queryAllByRole("row");
+
+    // Expect 5 rows (header + 3 chids + new chid )
+    expect(rows).toHaveLength(5);
+
+    // First row after table header
+    expect(rows[1]).toHaveTextContent(dummy.id);
+    expect(rows[1]).toHaveTextContent(dummy.subject);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("add a new change and receive a fail update", async () => {
+    render(<Popup />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("tableaction"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
+
+    const dummy = {
+      id: "223344",
+      error: true,
+    };
+
+    // Simulate a message from background and wait for state update on popup
+    await waitFor(() => {
+      browser.runtime.sendMessage({ type: API.UPDATE_DATA, data: [dummy] });
+      expectMessage(API.UPDATE_DATA, [dummy]);
+    });
+
+    // Expect 5 rows (header + 3 chids + new chid)
+    expect(screen.queryAllByRole("row")).toHaveLength(5);
+
+    // Popup removes it after 2 seconds ("css" animation)
+    await waitFor(
+      () => {
+        // Expect 5 rows (header + 3 chids)
+        expect(screen.queryAllByRole("row")).toHaveLength(4);
+      },
+      { timeout: 3000 }
+    );
+  });
 });

@@ -503,6 +503,8 @@ function ChidTable({
 
   useEffect(() => {
     if (updated.length > 0) {
+      // set a clean up flag
+      let isMounted = true;
       let updateId = [],
         removeId = [];
 
@@ -522,14 +524,19 @@ function ChidTable({
       setData([...data]);
 
       setTimeout(() => {
-        remove(data, (obj) => removeId.includes(obj.id));
+        if (isMounted) {
+          remove(data, (obj) => removeId.includes(obj.id));
 
-        let merged = merge(keyBy(data, "id"), keyBy(updateId, "id"));
-        merged = values(merged);
+          let merged = merge(keyBy(data, "id"), keyBy(updateId, "id"));
+          merged = values(merged);
 
-        setData([...merged]);
-        setDisableActions(false);
+          setData([...merged]);
+          setDisableActions(false);
+        }
       }, 2000);
+
+      // cancel subscription to useEffect
+      return () => (isMounted = false);
     }
   }, [updated]);
 
