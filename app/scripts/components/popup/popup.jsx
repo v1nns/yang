@@ -107,7 +107,7 @@ function Popup() {
         onAddChange={handleAddChange}
         onRemoveChanges={handleRemoveChanges}
         dark={darkMode}
-        disabled={disabled}
+        emptyConfig={disabled}
       />
     </div>
   );

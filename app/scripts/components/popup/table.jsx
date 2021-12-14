@@ -112,31 +112,50 @@ const ColumnTitle = ({ title, hint, dark }) => {
 
 /* -------------------------------------------------------------------------- */
 
-const EmptyData = (
-  <Grid
-    container
-    direction="column"
-    justifyContent="center"
-    alignItems="center"
-    alignContent="center"
-  >
-    <Grid item xs>
-      <Grid container justifyContent="flex-end" alignItems="center" spacing={1}>
-        <Grid item>
-          <Info color="primary" />
-        </Grid>
-        <Grid item>
-          <Typography variant="subtitle2">Empty data</Typography>
+const EmptyData = (emptyConfig) => {
+  let title = "",
+    subtitle = "";
+  if (emptyConfig) {
+    title = "Empty Settings";
+    subtitle = "Setup configuration settings before adding a Change-Id.";
+  } else {
+    title = "Empty Data";
+    subtitle = "Add a Change-Id and it will show up here.";
+  }
+
+  return (
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      alignContent="center"
+    >
+      <Grid item xs>
+        <Grid
+          container
+          justifyContent="flex-end"
+          alignItems="center"
+          spacing={1}
+        >
+          <Grid item>
+            <Info color="primary" />
+          </Grid>
+          <Grid item>
+            <Typography aria-label="tableinfo" variant="subtitle2">
+              {title}
+            </Typography>
+          </Grid>
         </Grid>
       </Grid>
+      <Grid item>
+        <Typography aria-label="tableinfo" variant="caption">
+          {subtitle}
+        </Typography>
+      </Grid>
     </Grid>
-    <Grid item>
-      <Typography variant="caption">
-        Add a Change-Id and it will show up here.
-      </Typography>
-    </Grid>
-  </Grid>
-);
+  );
+};
 
 /* -------------------------------------------------------------------------- */
 
@@ -456,7 +475,7 @@ function ChidTable({
   dark,
   chids,
   updated,
-  disabled,
+  emptyConfig,
   onAddChange,
   onRemoveChanges,
 }) {
@@ -701,7 +720,7 @@ function ChidTable({
   /* ------------------------------------------------------------------------ */
 
   const disableButtons =
-    (editingId === 0 && !toggleSelection) || disableActions || disabled;
+    (editingId === 0 && !toggleSelection) || disableActions || emptyConfig;
   const theme = dark ? "darkest" : "default";
   return (
     <div aria-label="table" style={{ height: "300px" }}>
@@ -709,7 +728,7 @@ function ChidTable({
         title={Title(dark)}
         columns={createColumns}
         data={data}
-        noDataComponent={EmptyData}
+        noDataComponent={EmptyData(emptyConfig)}
         actions={Actions(dark, disableButtons, addMode, selectMode)}
         contextActions={ContextActions(dark, deleteAll)}
         selectableRows={toggleSelection}

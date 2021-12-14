@@ -100,7 +100,7 @@ describe("popup with no chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("show text about empty data TODO: think about showing something different in content", async () => {
+  test("show text about empty settings", async () => {
     render(<Popup />);
 
     // Popup asks background service for chids
@@ -110,16 +110,48 @@ describe("popup with no chids", () => {
     });
 
     const actionButtons = screen.getAllByLabelText("tableaction");
-    const table = screen.getByLabelText("table");
 
     // Context action buttons must be disabled
     expect(actionButtons).toHaveLength(2);
     expect(actionButtons[0]).toBeDisabled();
     expect(actionButtons[1]).toBeDisabled();
 
-    // Table must show message about empty data
-    expect(table).toHaveTextContent("Empty data");
-    expect(table).toHaveTextContent(
+    const tableInfo = screen.getAllByLabelText("tableinfo");
+
+    // Table info must show message about empty settings
+    expect(tableInfo).toHaveLength(2);
+    expect(tableInfo[0]).toHaveTextContent("Empty Settings");
+    expect(tableInfo[1]).toHaveTextContent(
+      "Setup configuration settings before adding a Change-Id."
+    );
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("show text about empty data", async () => {
+    mockMessageReturnValue(API.EXISTS_CONFIG, true);
+
+    render(<Popup />);
+
+    // Popup asks background service for chids
+    await waitFor(() => {
+      expectMessage(API.EXISTS_CONFIG);
+      expectMessage(API.GET_DATA);
+    });
+
+    const actionButtons = screen.getAllByLabelText("tableaction");
+
+    // Context action buttons must be disabled
+    expect(actionButtons).toHaveLength(2);
+    expect(actionButtons[0]).toBeEnabled();
+    expect(actionButtons[1]).toBeEnabled();
+
+    const tableInfo = screen.getAllByLabelText("tableinfo");
+
+    // Table info must show message about empty data
+    expect(tableInfo).toHaveLength(2);
+    expect(tableInfo[0]).toHaveTextContent("Empty Data");
+    expect(tableInfo[1]).toHaveTextContent(
       "Add a Change-Id and it will show up here."
     );
   });
@@ -305,10 +337,12 @@ describe("popup with chids", () => {
     // Expect no rows
     expect(screen.queryAllByRole("row")).toHaveLength(0);
 
-    // Table must show message about empty data
-    const table = screen.getByLabelText("table");
-    expect(table).toHaveTextContent("Empty data");
-    expect(table).toHaveTextContent(
+    const tableInfo = screen.getAllByLabelText("tableinfo");
+
+    // Table info must show message about empty data
+    expect(tableInfo).toHaveLength(2);
+    expect(tableInfo[0]).toHaveTextContent("Empty Data");
+    expect(tableInfo[1]).toHaveTextContent(
       "Add a Change-Id and it will show up here."
     );
   });
