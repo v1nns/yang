@@ -476,6 +476,7 @@ function ChidTable({
   chids,
   updated,
   emptyConfig,
+  isTesting,
   onAddChange,
   onRemoveChanges,
 }) {
@@ -487,6 +488,9 @@ function ChidTable({
 
   // Disable any action/ctx-action or button during update/delete animation
   const [disableActions, setDisableActions] = useState(false);
+
+  // Timeout to show animation/transition
+  const animationTimeout = isTesting ? 200 : 2000;
 
   /* --------------------------- Load initial data -------------------------- */
 
@@ -513,7 +517,7 @@ function ChidTable({
 
           setData([...chids]);
           setDisableActions(false);
-        }, 2000);
+        }, animationTimeout);
       }
     }
   }, [chids]);
@@ -552,7 +556,7 @@ function ChidTable({
           setData([...merged]);
           setDisableActions(false);
         }
-      }, 2000);
+      }, animationTimeout);
 
       // cancel subscription to useEffect
       return () => (isMounted = false);

@@ -73,7 +73,7 @@ describe("popup with no chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("change style on dark mode", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Simulate a click on Dark Mode button
     userEvent.click(screen.getByLabelText("darkmode"));
@@ -89,7 +89,7 @@ describe("popup with no chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("open settings", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Simulate a click on Settings button
     userEvent.click(screen.getByLabelText("settings"));
@@ -101,7 +101,7 @@ describe("popup with no chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("show text about empty settings", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Popup asks background service for chids
     await waitFor(() => {
@@ -131,7 +131,7 @@ describe("popup with no chids", () => {
   test("show text about empty data", async () => {
     mockMessageReturnValue(API.EXISTS_CONFIG, true);
 
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Popup asks background service for chids
     await waitFor(() => {
@@ -171,7 +171,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("show changes and action buttons are enabled", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // In the first render, popup asks background service for chids
     await waitFor(() => {
@@ -203,7 +203,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("add a new change", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -233,7 +233,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("remove a change", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -267,7 +267,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("remove two changes", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -305,7 +305,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("remove all changes", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -350,7 +350,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("add a new change and receive a success update", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -403,7 +403,7 @@ describe("popup with chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("add a new change and receive a fail update", async () => {
-    render(<Popup />);
+    render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
     await waitFor(() => screen.getAllByLabelText("tableaction"));
@@ -444,12 +444,242 @@ describe("popup with chids", () => {
     expect(screen.queryAllByRole("row")).toHaveLength(5);
 
     // Popup removes it after 2 seconds ("css" animation)
-    await waitFor(
-      () => {
-        // Expect 5 rows (header + 3 chids)
-        expect(screen.queryAllByRole("row")).toHaveLength(4);
+    await waitFor(() => {
+      // Expect 4 rows (header + 3 chids)
+      expect(screen.queryAllByRole("row")).toHaveLength(4);
+    });
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("add two changes and receive a success update", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("tableaction"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
+
+    // Simulate a click on button to add a second change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
+
+    const dummies = [
+      {
+        subject: "Some dummy change here",
+        status: "NEW",
+        id: "223344",
+        verified: 1,
+        codeReview: 1,
       },
-      { timeout: 3000 }
-    );
+      {
+        subject: "Another dummy change",
+        status: "MERGED",
+        id: "556677",
+        verified: 1,
+        codeReview: 2,
+      },
+    ];
+
+    // Simulate a message from background and wait for state update on popup
+    await waitFor(() => {
+      browser.runtime.sendMessage({ type: API.UPDATE_DATA, data: dummies });
+      expectMessage(API.UPDATE_DATA, dummies);
+    });
+
+    const rows = screen.queryAllByRole("row");
+
+    // Expect 6 rows (header + 3 chids + 2 new chids )
+    expect(rows).toHaveLength(6);
+
+    // First and second rows after table header
+    expect(rows[1]).toHaveTextContent(dummies[1].id);
+    expect(rows[1]).toHaveTextContent(dummies[1].subject);
+    expect(rows[2]).toHaveTextContent(dummies[0].id);
+    expect(rows[2]).toHaveTextContent(dummies[0].subject);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("add two changes and receive a fail update", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("tableaction"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
+
+    // Simulate a click on button to add a second change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
+
+    const dummies = [
+      {
+        id: "223344",
+        error: true,
+      },
+      {
+        id: "556677",
+        error: true,
+      },
+    ];
+
+    // Simulate a message from background and wait for state update on popup
+    await waitFor(() => {
+      browser.runtime.sendMessage({ type: API.UPDATE_DATA, data: dummies });
+      expectMessage(API.UPDATE_DATA, dummies);
+    });
+
+    // Expect 6 rows (header + 3 chids + 2 new chids)
+    expect(screen.queryAllByRole("row")).toHaveLength(6);
+
+    // Popup removes it after 2 seconds ("css" animation)
+    await waitFor(() => {
+      // Expect 4 rows (header + 3 chids)
+      expect(screen.queryAllByRole("row")).toHaveLength(4);
+    });
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("add two changes and receive a mixed update", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("tableaction"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
+
+    // Simulate a click on button to add a second change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("inputchange"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+
+    // Cleanup any mock call to webextension api
+    cleanup();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("savechange"));
+
+    // Popup will send a message informing to add new change
+    await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
+
+    const dummies = [
+      {
+        id: "223344",
+        error: true,
+      },
+      {
+        subject: "Another dummy change",
+        status: "MERGED",
+        id: "556677",
+        verified: 1,
+        codeReview: 2,
+      },
+    ];
+
+    // Simulate a message from background and wait for state update on popup
+    await waitFor(() => {
+      browser.runtime.sendMessage({ type: API.UPDATE_DATA, data: dummies });
+      expectMessage(API.UPDATE_DATA, dummies);
+    });
+
+    // Expect 6 rows (header + 3 chids + 2 new chids)
+    expect(screen.queryAllByRole("row")).toHaveLength(6);
+
+    // Popup removes it after 2 seconds ("css" animation)
+    await waitFor(() => {
+      // Expect 4 rows (header + 3 chids + new chid)
+      expect(screen.queryAllByRole("row")).toHaveLength(5);
+    });
   });
 });

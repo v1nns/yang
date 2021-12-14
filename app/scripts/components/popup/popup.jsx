@@ -8,7 +8,7 @@ import ChidTable from "./table";
 
 import API from "../../api";
 
-function Popup() {
+function Popup({ isTesting }) {
   const [changes, setChanges] = useState([]);
   const [updated, setUpdated] = useState([]);
   const [disabled, setDisabled] = useState(false);
@@ -108,9 +108,14 @@ function Popup() {
         onRemoveChanges={handleRemoveChanges}
         dark={darkMode}
         emptyConfig={disabled}
+        isTesting={isTesting}
       />
     </div>
   );
 }
+
+Popup.defaultProps = {
+  isTesting: false,
+};
 
 export default Popup;
