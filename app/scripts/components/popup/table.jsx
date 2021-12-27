@@ -377,6 +377,12 @@ const rowStyle = (dark) => [
     },
   },
   {
+    when: (row) => row.status === "ABANDONED",
+    style: {
+      textDecoration: "line-through",
+    },
+  },
+  {
     when: (row) => row.verified === -1 || row.codeReview === -2,
     style: {
       backgroundColor: Colors.status.fail,

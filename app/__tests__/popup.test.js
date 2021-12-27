@@ -3,62 +3,11 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { when } from "jest-when";
-
 import API from "../scripts/api";
 import { ThemeDark } from "../scripts/components/popup/theme";
 import Popup from "../scripts/components/popup/popup";
 
-/* -------------------------------------------------------------------------- */
-/*                                  Mock Data                                 */
-/* -------------------------------------------------------------------------- */
-
-// TODO: remove from here
-const chids = [
-  {
-    subject: "Expose index of the group for a line",
-    status: "NEW",
-    id: "326205",
-    verified: -1,
-    codeReview: 0,
-  },
-  {
-    subject: "Validate reviewer filters",
-    status: "NEW",
-    id: "269047",
-    verified: 1,
-    codeReview: 0,
-  },
-  {
-    subject: "Abstract Publisher/Subscriber into generic interfaces",
-    status: "MERGED",
-    id: "321037",
-    verified: 1,
-    codeReview: 2,
-  },
-];
-
-/* -------------------------------------------------------------------------- */
-/*                                    Utils                                   */
-/* -------------------------------------------------------------------------- */
-
-// TODO: remove from here
-function expectMessage(type, data) {
-  const message = { type: type, ...(data !== undefined ? { data } : {}) };
-  expect(browser.runtime.sendMessage).toBeCalledWith(message);
-}
-
-function mockMessageReturnValue(type, data) {
-  when(browser.runtime.sendMessage)
-    .calledWith({
-      type: type,
-    })
-    .mockReturnValue({ response: data });
-}
-
-const cleanup = () => {
-  browser.runtime.sendMessage.mockClear();
-};
+import { chids, cleanup, expectMessage, mockMessageReturnValue } from "./utils";
 
 /* -------------------------------------------------------------------------- */
 /*                                 Empty Popup                                */
