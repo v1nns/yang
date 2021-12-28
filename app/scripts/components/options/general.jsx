@@ -66,7 +66,7 @@ function GeneralConfig({ data, onChangeRefreshTime }) {
 
       <Grid item xs={11}>
         <Slider
-          aria-label="RefreshTime"
+          aria-label="refreshtime"
           classes={{ root: slider.root }}
           value={data}
           onChange={(e, val) => onChangeRefreshTime(val)}

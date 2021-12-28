@@ -1,6 +1,6 @@
 # yang (Yet Another Notifier ~~for~~ Gerrit)
 
-Receive update notifications from Gerrit change-ids. This is a work in progress.
+Receive update notifications from Gerrit change-ids. *This is a work in progress*.
 
 Currently, it is not published in any store, but I do have the intention to publish it.
 

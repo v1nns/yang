@@ -37,6 +37,7 @@ const Endpoint = ({ value, onChange }) => {
       <Grid item xs={12}>
         <TextField
           id="input-endpoint"
+          data-testid="input-endpoint"
           label={label}
           value={value}
           size="small"
@@ -65,6 +66,7 @@ const Credentials = ({ value, onChange }) => {
       <AccordionSummary
         expandIcon={<ExpandMore />}
         aria-controls="panel1a-content"
+        data-testid="credentials"
         id="panel1a-header"
         style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
       >
@@ -82,6 +84,7 @@ const Credentials = ({ value, onChange }) => {
               <Grid item xs={11}>
                 <TextField
                   id="input-email"
+                  data-testid="input-email"
                   label={labelEmail}
                   value={email}
                   size="small"
@@ -109,6 +112,7 @@ const Credentials = ({ value, onChange }) => {
               <Grid item xs={11}>
                 <TextField
                   id="input-password"
+                  data-testid="input-password"
                   label={labelPassword}
                   value={password}
                   size="small"

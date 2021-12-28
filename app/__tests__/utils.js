@@ -1,5 +1,9 @@
 import { when } from "jest-when";
 
+// By default, use EN language
+// TODO: change this when multi-language is supported
+import messageDict from "../_locales/en/messages.json";
+
 /* -------------------------------------------------------------------------- */
 /*                                    Utils                                   */
 /* -------------------------------------------------------------------------- */
@@ -15,6 +19,22 @@ export function mockMessageReturnValue(type, data) {
       type: type,
     })
     .mockReturnValue({ response: data });
+}
+
+export function mockStorageReturnValue(name, data) {
+  when(browser.storage.local.get)
+    .calledWith(name)
+    .mockResolvedValue({ [name]: data });
+}
+
+export function mockAnyi18nMessage() {
+  when(browser.i18n.getMessage).mockImplementation((selector) =>
+    geti18nMessage(selector)
+  );
+}
+
+export function geti18nMessage(selector) {
+  return messageDict[selector].message;
 }
 
 export const cleanup = () => {
