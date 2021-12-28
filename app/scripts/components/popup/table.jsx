@@ -379,7 +379,8 @@ const rowStyle = (dark) => [
   {
     when: (row) => row.status === "ABANDONED",
     style: {
-      textDecoration: "line-through",
+      //   textDecoration: "line-through",
+      ...(dark ? ThemeDark.stripeEffect : ThemeLight.stripeEffect),
     },
   },
   {

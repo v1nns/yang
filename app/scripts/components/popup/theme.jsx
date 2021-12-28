@@ -61,6 +61,14 @@ const ThemeDark = {
     border: "rgba(81, 81, 81, 1)",
     divider: "rgba(173, 186, 199, .12)",
   },
+  stripeEffect: {
+    backgroundSize: "5.00px 5.00px",
+    backgroundImage:
+      "linear-gradient(135deg, transparent 25%," +
+      "rgba(65, 71, 79, .84) 25%, rgba(65, 71, 79, .84) 50%," +
+      "transparent 50%, transparent 75%," +
+      "rgba(65, 71, 79, .84) 75%, rgba(65, 71, 79, .84) 100%)",
+  },
 };
 
 /* -------------------------------------------------------------------------- */
@@ -76,6 +84,14 @@ const ThemeLight = {
   table: {
     border: "rgba(0, 0, 0, .12)",
     divider: "rgba(0, 0, 0, .05)",
+  },
+  stripeEffect: {
+    backgroundSize: "5.00px 5.00px",
+    backgroundImage:
+      "linear-gradient(135deg, transparent 25%," +
+      "rgba(205, 205, 205, .44) 25%,rgba(205, 205, 205, .44) 50%," +
+      "transparent 50%, transparent 75%," +
+      "rgba(205, 205, 205, .44) 75%, rgba(205, 205, 205, .44) 100%)",
   },
 };
 
@@ -113,7 +129,7 @@ createTheme("darkest", {
     text: "rgb(255, 255, 255)",
   },
   highlightOnHover: {
-    default: "rgb(65, 71, 79)",
+    default: "rgba(65, 71, 79, .84)",
     text: "rgb(255, 255, 255)",
   },
   striped: {
