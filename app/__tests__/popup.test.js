@@ -15,8 +15,8 @@ import { chids, cleanup, expectMessage, mockMessageReturnValue } from "./utils";
 
 describe("popup with no chids", () => {
   beforeEach(() => {
-    mockMessageReturnValue(API.EXISTS_CONFIG, false);
-    mockMessageReturnValue(API.GET_DATA, {});
+    mockMessageReturnValue(API.EXISTS_CONFIG, undefined, false);
+    mockMessageReturnValue(API.GET_DATA, undefined, {});
   });
 
   /* ------------------------------------------------------------------------ */
@@ -78,7 +78,7 @@ describe("popup with no chids", () => {
   /* ------------------------------------------------------------------------ */
 
   test("show text about empty data", async () => {
-    mockMessageReturnValue(API.EXISTS_CONFIG, true);
+    mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
 
     render(<Popup isTesting={true} />);
 
@@ -113,8 +113,8 @@ describe("popup with no chids", () => {
 describe("popup with chids", () => {
   beforeEach(() => {
     console.log = jest.fn();
-    mockMessageReturnValue(API.EXISTS_CONFIG, true);
-    mockMessageReturnValue(API.GET_DATA, chids);
+    mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
+    mockMessageReturnValue(API.GET_DATA, undefined, chids);
   });
 
   /* ------------------------------------------------------------------------ */

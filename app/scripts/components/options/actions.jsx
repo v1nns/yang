@@ -106,6 +106,7 @@ function Actions({ showMessage, message, onClickTest, onClickSave, onClose }) {
     <div style={{ position: "absolute", bottom: 15, right: 15 }}>
       <Snackbar
         key={Math.random()}
+        aria-label="snackbar"
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left",
@@ -123,12 +124,20 @@ function Actions({ showMessage, message, onClickTest, onClickSave, onClose }) {
 
       <Grid container spacing={2}>
         <Grid item>
-          <Button classes={{ root: secondary.root }} onClick={onClickTest}>
+          <Button
+            aria-label="test-config"
+            classes={{ root: secondary.root }}
+            onClick={onClickTest}
+          >
             {messageTest}
           </Button>
         </Grid>
         <Grid item>
-          <Button classes={{ root: primary.root }} onClick={onClickSave}>
+          <Button
+            aria-label="save-config"
+            classes={{ root: primary.root }}
+            onClick={onClickSave}
+          >
             {messageSave}
           </Button>
         </Grid>

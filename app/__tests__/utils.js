@@ -13,18 +13,17 @@ export function expectMessage(type, data) {
   expect(browser.runtime.sendMessage).toBeCalledWith(message);
 }
 
-export function mockMessageReturnValue(type, data) {
+export function mockMessageReturnValue(type, data, result) {
+  const message = { type: type, ...(data !== undefined ? { data } : {}) };
   when(browser.runtime.sendMessage)
-    .calledWith({
-      type: type,
-    })
-    .mockReturnValue({ response: data });
+    .calledWith(message)
+    .mockReturnValue({ response: result });
 }
 
-export function mockStorageReturnValue(name, data) {
+export function mockStorageResolvedValue(name, data) {
   when(browser.storage.local.get)
     .calledWith(name)
-    .mockResolvedValue({ [name]: data });
+    .mockResolvedValueOnce({ [name]: data });
 }
 
 export function mockAnyi18nMessage() {
@@ -68,3 +67,12 @@ export const chids = [
     codeReview: 2,
   },
 ];
+
+export const config = {
+  refreshTime: 30,
+  endpoint: "https://hereweare.testing.it",
+  credentials: {
+    email: "johnny@b.goode",
+    password: "ultrasecretpassword",
+  },
+};
