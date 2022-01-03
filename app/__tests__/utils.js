@@ -20,6 +20,10 @@ export function mockMessageReturnValue(type, data, result) {
     .mockReturnValue({ response: result });
 }
 
+export function expectStorageSave(data) {
+  expect(browser.storage.local.set).toBeCalledWith(data);
+}
+
 export function mockStorageResolvedValue(name, data) {
   when(browser.storage.local.get)
     .calledWith(name)
