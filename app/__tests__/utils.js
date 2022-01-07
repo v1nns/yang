@@ -5,13 +5,21 @@ import { when } from "jest-when";
 import messageDict from "../_locales/en/messages.json";
 
 /* -------------------------------------------------------------------------- */
-/*                                    Utils                                   */
+/*                                Expectations                                */
 /* -------------------------------------------------------------------------- */
 
 export function expectMessage(type, data) {
   const message = { type: type, ...(data !== undefined ? { data } : {}) };
   expect(browser.runtime.sendMessage).toBeCalledWith(message);
 }
+
+export function expectStorageSave(data) {
+  expect(browser.storage.local.set).toBeCalledWith(data);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Mock Functions                               */
+/* -------------------------------------------------------------------------- */
 
 export function mockMessageReturnValue(type, data, result) {
   const message = { type: type, ...(data !== undefined ? { data } : {}) };
@@ -20,14 +28,16 @@ export function mockMessageReturnValue(type, data, result) {
     .mockReturnValue({ response: result });
 }
 
-export function expectStorageSave(data) {
-  expect(browser.storage.local.set).toBeCalledWith(data);
-}
-
-export function mockStorageResolvedValue(name, data) {
+export function mockStorageValueOnce(name, data) {
   when(browser.storage.local.get)
     .calledWith(name)
     .mockResolvedValueOnce({ [name]: data });
+}
+
+export function mockStorageValue(name, data) {
+  when(browser.storage.local.get)
+    .calledWith(name)
+    .mockResolvedValue({ [name]: data });
 }
 
 export function mockAnyi18nMessage() {
@@ -36,13 +46,17 @@ export function mockAnyi18nMessage() {
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                    Utils                                   */
+/* -------------------------------------------------------------------------- */
+
 export function geti18nMessage(selector) {
   return messageDict[selector].message;
 }
 
-export const cleanup = () => {
+export function cleanup() {
   browser.runtime.sendMessage.mockClear();
-};
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                  Mock Data                                 */

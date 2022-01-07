@@ -5,38 +5,42 @@ import {
   chids,
   config,
   expectStorageSave,
-  mockStorageResolvedValue,
+  mockStorageValue,
+  mockStorageValueOnce,
 } from "./utils";
 import {
   init,
+  reset,
   handleMessage,
   polling,
   restart,
 } from "../scripts/components/background/background";
 
+import Service from "../scripts/components/background/polling";
+
 // Mock Axios
 jest.mock("axios");
 
 /* -------------------------------------------------------------------------- */
-/*                             Background Service                             */
+/*                           Empty Background Script                          */
 /* -------------------------------------------------------------------------- */
 
-describe("background service with empty config", () => {
+describe("background script with empty config", () => {
   beforeAll(() => {
-    // console.log = jest.fn();
-    mockStorageResolvedValue("options", {});
+    console.log = jest.fn();
+    mockStorageValue("options", {});
   });
 
   /* ------------------------------------------------------------------------ */
 
-  test("should not start gerrot polling service", async () => {
+  test("should not start gerrit polling service", async () => {
     // Mock storage to return a list of change-ids
-    mockStorageResolvedValue("changes", JSON.stringify(chids));
+    mockStorageValueOnce("changes", JSON.stringify(chids));
 
     await init();
 
     expect(browser.runtime.onMessage.addListener).toBeCalled();
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 
@@ -44,14 +48,14 @@ describe("background service with empty config", () => {
 
   test("receive get data message without any change-id", async () => {
     // Mock storage to return a list of change-ids
-    mockStorageResolvedValue("changes", []);
-    mockStorageResolvedValue("updated", []);
+    mockStorageValueOnce("changes", []);
+    mockStorageValueOnce("updated", []);
 
     const request = { type: API.GET_DATA };
     const result = await handleMessage(request);
 
     expect(result).toEqual({ response: [] });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 
@@ -59,14 +63,14 @@ describe("background service with empty config", () => {
 
   test("receive get data message without updates", async () => {
     // Mock storage to return a list of change-ids
-    mockStorageResolvedValue("changes", JSON.stringify(chids));
-    mockStorageResolvedValue("updated", []);
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+    mockStorageValueOnce("updated", []);
 
     const request = { type: API.GET_DATA };
     const result = await handleMessage(request);
 
     expect(result).toEqual({ response: chids });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 
@@ -79,15 +83,15 @@ describe("background service with empty config", () => {
     const notUpdated = [chids[0], chids[2]];
 
     // Mock storage to return a list of change-ids
-    mockStorageResolvedValue("changes", JSON.stringify(chids));
-    mockStorageResolvedValue("updated", JSON.stringify(updated));
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+    mockStorageValueOnce("updated", JSON.stringify(updated));
 
     const request = { type: API.GET_DATA };
     const result = await handleMessage(request);
 
     // Response must have both arrays merged (updated and notUpdated)
     expect(result).toEqual({ response: [...updated, ...notUpdated] });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 
@@ -102,14 +106,15 @@ describe("background service with empty config", () => {
     const result = await handleMessage(request);
 
     expect(result).toBe(true);
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
   });
 
   /* ------------------------------------------------------------------------ */
 
   test("receive remove changes message", async () => {
     // Mock storage to return a list of change-ids
-    mockStorageResolvedValue("changes", JSON.stringify(chids));
+    mockStorageValueOnce("changes", JSON.stringify(chids));
 
     const request = { type: API.REMOVE_CHANGES, data: ["326205"] };
     const result = await handleMessage(request);
@@ -119,7 +124,8 @@ describe("background service with empty config", () => {
     expectStorageSave({ changes: JSON.stringify(updated) });
 
     expect(result).toBe(true);
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
   });
 
   /* ------------------------------------------------------------------------ */
@@ -135,7 +141,8 @@ describe("background service with empty config", () => {
 
     expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: true });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
   });
 
   /* ------------------------------------------------------------------------ */
@@ -152,7 +159,8 @@ describe("background service with empty config", () => {
 
     expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: false });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
   });
 
   /* ------------------------------------------------------------------------ */
@@ -168,7 +176,8 @@ describe("background service with empty config", () => {
 
     expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: false });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
   });
 
   /* ------------------------------------------------------------------------ */
@@ -177,9 +186,9 @@ describe("background service with empty config", () => {
     const request = { type: API.RESTART_SERVICE };
     const result = await handleMessage(request);
 
-    // As we have no update service running, shouldn't set restart flag
+    // As we have no polling service running, shouldn't set restart flag
     expect(result).toBe(true);
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 
@@ -190,7 +199,133 @@ describe("background service with empty config", () => {
     const result = await handleMessage(request);
 
     expect(result).toEqual({ response: false });
-    expect(polling).toBe(null);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*                        Background Script with config                       */
+/* -------------------------------------------------------------------------- */
+
+describe("background script with config and no running service", () => {
+  // Mock polling service
+  let serviceSpy;
+
+  beforeAll(() => {
+    console.log = jest.fn();
+    mockStorageValue("options", JSON.stringify(config));
+
+    // Mock implementation
+    serviceSpy = jest.spyOn(Service, "run").mockImplementation(() => {
+      return true;
+    });
+  });
+
+  beforeEach(() => {
+    // Clear global variables
+    reset();
+  });
+
+  afterAll(() => {
+    serviceSpy.mockRestore();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("should start gerrit polling service", async () => {
+    // Mock storage to return a list of change-ids
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+
+    await init();
+
+    expect(browser.runtime.onMessage.addListener).toBeCalled();
+    expect(polling).not.toBe(false);
+    expect(restart).toBe(false);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("should not start gerrit polling service", async () => {
+    // Mock storage to return an empty list
+    mockStorageValueOnce("changes", []);
+
+    await init();
+
+    expect(browser.runtime.onMessage.addListener).toBeCalled();
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("receive add change message and start polling service", async () => {
+    // Mock storage to return an empty list
+    mockStorageValueOnce("changes", []);
+
+    const request = { type: API.ADD_CHANGE, data: 222222 };
+    const result = await handleMessage(request);
+
+    expectStorageSave({
+      changes: JSON.stringify([{ id: 222222, codeReview: 0, verified: 0 }]),
+    });
+
+    expect(result).toBe(true);
+    expect(polling).not.toBe(false);
+    expect(restart).toBe(false);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("receive remove changes message with a single entry", async () => {
+    // Mock storage to return a list of change-ids
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+
+    await init();
+
+    expect(polling).not.toBe(false);
+    expect(restart).toBe(false);
+
+    // Mock storage to return a list of change-ids
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+
+    const request = { type: API.REMOVE_CHANGES, data: ["326205"] };
+    const result = await handleMessage(request);
+
+    // Create expectations
+    const updated = [chids[1], chids[2]];
+    expectStorageSave({ changes: JSON.stringify(updated) });
+
+    expect(result).toBe(true);
+    expect(polling).not.toBe(false);
+    expect(restart).toBe(false);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("receive remove changes message with all entries", async () => {
+    // Mock storage to return a list of change-ids
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+
+    await init();
+
+    expect(polling).not.toBe(false);
+    expect(restart).toBe(false);
+
+    // Mock storage to return a list of change-ids
+    mockStorageValueOnce("changes", JSON.stringify(chids));
+
+    const request = {
+      type: API.REMOVE_CHANGES,
+      data: ["326205", "269047", "321037"],
+    };
+    const result = await handleMessage(request);
+
+    // Create expectations
+    expectStorageSave({ changes: JSON.stringify([]) });
+
+    expect(result).toBe(true);
+    expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
 });

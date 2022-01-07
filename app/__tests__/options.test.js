@@ -13,7 +13,7 @@ import {
   geti18nMessage,
   mockAnyi18nMessage,
   mockMessageReturnValue,
-  mockStorageResolvedValue,
+  mockStorageValue,
 } from "./utils";
 
 /* -------------------------------------------------------------------------- */
@@ -23,7 +23,7 @@ import {
 describe("options without config", () => {
   beforeEach(() => {
     // Config saved in storage
-    mockStorageResolvedValue("options", {});
+    mockStorageValue("options", {});
 
     // Add implementation to return value for any i18n.getMessage call
     mockAnyi18nMessage();
@@ -261,7 +261,7 @@ describe("options without config", () => {
 describe("options with config", () => {
   beforeEach(() => {
     // Config saved in storage
-    mockStorageResolvedValue("options", JSON.stringify(config));
+    mockStorageValue("options", JSON.stringify(config));
 
     // Add implementation to return value for any i18n.getMessage call
     mockAnyi18nMessage();
