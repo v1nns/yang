@@ -1,8 +1,17 @@
+import axios from "axios";
 import { when } from "jest-when";
 
+/* -------------------------------------------------------------------------- */
+/*                                 Dictionary                                 */
+/* -------------------------------------------------------------------------- */
+
 // By default, use EN language
-// TODO: change this when multi-language is supported
+// TODO: change this when multi-language gets supported
 import messageDict from "../_locales/en/messages.json";
+
+export function geti18nMessage(selector) {
+  return messageDict[selector].message;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                Expectations                                */
@@ -46,16 +55,53 @@ export function mockAnyi18nMessage() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                    Utils                                   */
-/* -------------------------------------------------------------------------- */
-
-export function geti18nMessage(selector) {
-  return messageDict[selector].message;
+export function mockPopupState(opened) {
+  const result = opened ? 1 : 0;
+  when(browser.extension.getViews)
+    .calledWith({ type: "popup" })
+    .mockReturnValue(result);
 }
 
 export function cleanup() {
   browser.runtime.sendMessage.mockClear();
+  //   browser.extension.getViews.mockClear();
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          HTTP requests using Axios                         */
+/* -------------------------------------------------------------------------- */
+
+// Mock Axios
+jest.mock("axios");
+
+export function mockResolvedAxiosGetOnce(url, options, result) {
+  when(axios.get)
+    .calledWith(
+      url,
+      {},
+      {
+        auth: {
+          username: options.credentials.email,
+          password: options.credentials.password,
+        },
+      }
+    )
+    .mockResolvedValueOnce(result);
+}
+
+export function mockRejectedAxiosGetOnce(url, options, result) {
+  when(axios.get)
+    .calledWith(
+      url,
+      {},
+      {
+        auth: {
+          username: options.credentials.email,
+          password: options.credentials.password,
+        },
+      }
+    )
+    .mockResolvedValueOnce({ response: result });
 }
 
 /* -------------------------------------------------------------------------- */

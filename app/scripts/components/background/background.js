@@ -148,6 +148,7 @@ async function testEndpoint(request) {
 
   let result = false;
   try {
+    // TODO: move this to gerrit.js
     result = await axios
       .get(
         url,
