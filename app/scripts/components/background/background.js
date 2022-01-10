@@ -69,7 +69,7 @@ function service() {
 /*                               Message Handler                              */
 /* -------------------------------------------------------------------------- */
 
-export function handleMessage(request, sender, sendResponse) {
+export function handleMessage(request) {
   console.log(`Background received a message: ${request.type}`);
   switch (request.type) {
     case API.GET_DATA:

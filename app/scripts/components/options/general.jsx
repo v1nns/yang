@@ -1,5 +1,5 @@
 import React from "react";
-
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/styles";
 
 import Divider from "@material-ui/core/Divider";
@@ -81,5 +81,15 @@ function GeneralConfig({ data, onChangeRefreshTime }) {
     </Grid>
   );
 }
+
+ValueLabelComponent.propTypes = {
+  children: PropTypes.element.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+GeneralConfig.propTypes = {
+  data: PropTypes.number.isRequired,
+  onChangeRefreshTime: PropTypes.func.isRequired,
+};
 
 export default GeneralConfig;

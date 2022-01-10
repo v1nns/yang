@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/styles";
 
 import Button from "@material-ui/core/Button";
@@ -145,5 +146,13 @@ function Actions({ showMessage, message, onClickTest, onClickSave, onClose }) {
     </div>
   );
 }
+
+Actions.propTypes = {
+  showMessage: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  onClickTest: PropTypes.func.isRequired,
+  onClickSave: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 export default Actions;

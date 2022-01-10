@@ -48,7 +48,7 @@ function Options() {
   /*                                 Handlers                                 */
   /* ------------------------------------------------------------------------ */
 
-  const handleClickSave = (e) => {
+  const handleClickSave = () => {
     let dummy = "";
     if (endpoint == "") {
       dummy = browser.i18n.getMessage("optionsMessageMissingConfig");
@@ -69,7 +69,7 @@ function Options() {
     setOpen(true);
   };
 
-  const handleClickTest = async (e) => {
+  const handleClickTest = async () => {
     let dummy = "";
     if (refreshTime == "" || endpoint == "" || credentials == "") {
       dummy = browser.i18n.getMessage("optionsMessageMissingConfig");

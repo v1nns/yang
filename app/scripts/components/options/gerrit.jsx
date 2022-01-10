@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
@@ -156,5 +157,22 @@ function GerritConfig({
     </Grid>
   );
 }
+
+Endpoint.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+Credentials.propTypes = {
+  value: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+GerritConfig.propTypes = {
+  endpoint: PropTypes.string.isRequired,
+  credentials: PropTypes.object.isRequired,
+  onChangeEndpoint: PropTypes.func.isRequired,
+  onChangeCredentials: PropTypes.func.isRequired,
+};
 
 export default GerritConfig;
