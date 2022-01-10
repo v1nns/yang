@@ -39,7 +39,7 @@ export function reset() {
 /* -------------------------------------------------------------------------- */
 
 async function startService() {
-  console.log("initializing update service");
+  console.log("Initializing update service");
   const options = await Storage.getOptions();
 
   if (options.refreshTime !== undefined) {
@@ -49,13 +49,13 @@ async function startService() {
 }
 
 function stopService() {
-  console.log("stopping update service");
+  console.log("Stopping update service");
   clearInterval(polling);
   reset();
 }
 
 function restartService() {
-  console.log("restarting update service");
+  console.log("Restarting update service");
   stopService();
   startService();
 }
@@ -70,7 +70,7 @@ function service() {
 /* -------------------------------------------------------------------------- */
 
 export function handleMessage(request, sender, sendResponse) {
-  console.log(`background received a message: ${request.type}`);
+  console.log(`Background received a message: ${request.type}`);
   switch (request.type) {
     case API.GET_DATA:
       return getChanges();
@@ -162,7 +162,7 @@ async function testEndpoint(request) {
       )
       .then((response) => (response.status == 200 ? true : false));
   } catch (err) {
-    console.log("error testing endpoint:", endpoint);
+    console.log("Error testing endpoint:", endpoint);
     if (err.response !== undefined) {
       console.log("err code:", err.response.status);
     }

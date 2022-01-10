@@ -26,7 +26,7 @@ function Popup({ isTesting }) {
   }, []);
 
   function handleUpdate(request, sender) {
-    console.log(`popup received a message: ${request.type}`);
+    console.log(`Popup received a message: ${request.type}`);
     if (request.type == API.UPDATE_DATA) {
       setUpdated(request.data);
     }

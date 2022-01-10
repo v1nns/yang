@@ -1,6 +1,9 @@
 import axios from "axios";
 import { when } from "jest-when";
 
+// Mock Axios
+jest.mock("axios");
+
 /* -------------------------------------------------------------------------- */
 /*                                 Dictionary                                 */
 /* -------------------------------------------------------------------------- */
@@ -62,17 +65,9 @@ export function mockPopupState(opened) {
     .mockReturnValue(result);
 }
 
-export function cleanup() {
-  browser.runtime.sendMessage.mockClear();
-  //   browser.extension.getViews.mockClear();
-}
-
 /* -------------------------------------------------------------------------- */
 /*                          HTTP requests using Axios                         */
 /* -------------------------------------------------------------------------- */
-
-// Mock Axios
-jest.mock("axios");
 
 export function mockResolvedAxiosGetOnce(url, options, result) {
   when(axios.get)

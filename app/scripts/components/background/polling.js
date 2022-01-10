@@ -11,6 +11,7 @@ import Storage from "./storage";
 
 const polling = {
   async run(restart, restartService, stopService) {
+    console.log("Run polling service");
     const existsConfig = await Storage.isConfigSet();
     if (!existsConfig) {
       // TODO: send some kind of notification telling about this
@@ -40,6 +41,8 @@ const polling = {
         changes[index] = result;
         updated.push({ ...result, updated: true });
       }
+
+      // TODO: add some sleep here?
     }
 
     if (restart) {
@@ -69,6 +72,13 @@ const polling = {
         // distinguish it when popup is opened
         await Storage.saveUpdatedChanges(updated);
 
+        // TODO: use dictionary here
+        const message = `Updated ${updated.length} Change-Id${
+          updated.length > 1 ? "s" : ""
+        }`;
+
+        console.log(message);
+
         // Set badge on extension icon
         browser.browserAction.setBadgeText({
           text: `${updated.length}`,
@@ -80,17 +90,17 @@ const polling = {
           priority: 1,
           iconUrl: browser.runtime.getURL("images/icon-128.png"),
           title: "Yet Another Notifier for Gerrit",
-          // TODO: use dictionary here
-          message: `Updated ${updated.length} Change-Id${
-            updated.length > 1 ? "s" : ""
-          }`,
+          message: message,
         });
       }
     }
 
     // If there is no more chid to query, must disable the service
-    const noChidToQuery = changes.every((obj) => obj.status === "MERGED");
+    const noChidToQuery = changes.every(
+      (obj) => obj.status === "MERGED" || obj.status === "ABANDONED"
+    );
     if (noChidToQuery) {
+      console.log("There is no change-id to query");
       await stopService();
     }
   },

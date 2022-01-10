@@ -1,13 +1,16 @@
-import axios from "axios";
-
 import API from "../scripts/api";
+
 import {
   chids,
   config,
   expectStorageSave,
   mockStorageValue,
   mockStorageValueOnce,
+  mockResolvedAxiosGetOnce,
+  mockRejectedAxiosGetOnce,
+  mockPopupState,
 } from "./utils";
+
 import {
   init,
   reset,
@@ -17,9 +20,6 @@ import {
 } from "../scripts/components/background/background";
 
 import Service from "../scripts/components/background/polling";
-
-// Mock Axios
-jest.mock("axios");
 
 /* -------------------------------------------------------------------------- */
 /*                           Empty Background Script                          */
@@ -97,7 +97,7 @@ describe("background script with empty config", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("receive add change message", async () => {
+  test("receive add change-id message", async () => {
     const request = {
       type: API.ADD_CHANGE,
       data: 12345,
@@ -112,7 +112,7 @@ describe("background script with empty config", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("receive remove changes message", async () => {
+  test("receive remove change-ids message", async () => {
     // Mock storage to return a list of change-ids
     mockStorageValueOnce("changes", JSON.stringify(chids));
 
@@ -136,10 +136,12 @@ describe("background script with empty config", () => {
       data: { endpoint: config.endpoint, credentials: config.credentials },
     };
 
-    axios.get.mockResolvedValueOnce({ status: 200, data: {} });
+    // Mock HTTP get response
+    const url = `${config.endpoint}/config/server/version`;
+    mockResolvedAxiosGetOnce(url, config, { status: 200, data: {} });
+
     const result = await handleMessage(request);
 
-    expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: true });
     expect(polling).toBe(false);
     expect(restart).toBe(false);
@@ -153,11 +155,12 @@ describe("background script with empty config", () => {
       data: { endpoint: config.endpoint, credentials: config.credentials },
     };
 
-    // Maybe this never occurs in "real life"
-    axios.get.mockResolvedValueOnce({ status: 400, data: {} });
+    // Mock HTTP get response (maybe this never occurs in "real life")
+    const url = `${config.endpoint}/config/server/version`;
+    mockResolvedAxiosGetOnce(url, config, { status: 400, data: {} });
+
     const result = await handleMessage(request);
 
-    expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: false });
     expect(polling).toBe(false);
     expect(restart).toBe(false);
@@ -171,10 +174,12 @@ describe("background script with empty config", () => {
       data: { endpoint: config.endpoint, credentials: config.credentials },
     };
 
-    axios.get.mockRejectedValueOnce({ response: { status: 404, data: {} } });
+    // Mock HTTP get response
+    const url = `${config.endpoint}/config/server/version`;
+    mockRejectedAxiosGetOnce(url, config, { status: 404, data: {} });
+
     const result = await handleMessage(request);
 
-    expect(axios.get).toBeCalled();
     expect(result).toEqual({ response: false });
     expect(polling).toBe(false);
     expect(restart).toBe(false);
@@ -208,7 +213,7 @@ describe("background script with empty config", () => {
 /*                        Background Script with config                       */
 /* -------------------------------------------------------------------------- */
 
-describe("background script with config and no running service", () => {
+describe("background script with config and no service running", () => {
   // Mock polling service
   let serviceSpy;
 
@@ -259,7 +264,7 @@ describe("background script with config and no running service", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("receive add change message and start polling service", async () => {
+  test("receive add change-id message and start polling service", async () => {
     // Mock storage to return an empty list
     mockStorageValueOnce("changes", []);
 
@@ -277,7 +282,7 @@ describe("background script with config and no running service", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("receive remove changes message with a single entry", async () => {
+  test("receive remove change-ids message with a single entry", async () => {
     // Mock storage to return a list of change-ids
     mockStorageValueOnce("changes", JSON.stringify(chids));
 
@@ -303,7 +308,7 @@ describe("background script with config and no running service", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("receive remove changes message with all entries", async () => {
+  test("receive remove change-ids message with all entries", async () => {
     // Mock storage to return a list of change-ids
     mockStorageValueOnce("changes", JSON.stringify(chids));
 
@@ -327,5 +332,88 @@ describe("background script with config and no running service", () => {
     expect(result).toBe(true);
     expect(polling).toBe(false);
     expect(restart).toBe(false);
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*                               Polling Service                              */
+/* -------------------------------------------------------------------------- */
+
+describe("polling service running with popup closed", () => {
+  beforeAll(() => {
+    console.log = jest.fn();
+    browser.extension.getViews = jest.fn();
+    browser.browserAction.setBadgeText = jest.fn();
+    browser.notifications.create = jest.fn();
+
+    mockStorageValue("options", JSON.stringify(config));
+    mockPopupState(false);
+  });
+
+  afterAll(() => {
+    browser.extension.getViews.mockRestore();
+    browser.browserAction.setBadgeText.mockRestore();
+    browser.notifications.create.mockRestore();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("run service and query existent change-ids", async () => {
+    // Mock storage to return a list of change-ids
+    mockStorageValue("changes", JSON.stringify(chids));
+
+    // Create a mock for every HTTP get response
+    for (const chid of chids) {
+      if (chid.status !== "MERGED") {
+        const url = `${config.endpoint}/changes/${chid.id}/detail`;
+        const result = {
+          _number: Number(chid.id),
+          subject: chid.subject,
+          status: "MERGED",
+          labels: {
+            Verified: {
+              all: [{ value: 1, date: "2022-01-01 11:07:42.000000000" }],
+            },
+            "Code-Review": {
+              all: [{ value: 2, date: "2022-01-01 11:07:42.000000000" }],
+            },
+          },
+        };
+        mockResolvedAxiosGetOnce(url, config, {
+          status: 200,
+          data: JSON.stringify(result),
+        });
+      }
+    }
+
+    const mockRestart = jest.fn();
+    const mockStop = jest.fn();
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for all change-ids
+    const changes = chids.map((obj) => {
+      return {
+        ...obj,
+        status: "MERGED",
+        verified: 1,
+        codeReview: 2,
+      };
+    });
+    // Create expectation for all change-ids with an update
+    const updated = chids
+      .filter((obj) => obj.status != "MERGED")
+      .map((hehe) => {
+        return {
+          ...hehe,
+          status: "MERGED",
+          verified: 1,
+          codeReview: 2,
+          updated: true,
+        };
+      });
+
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+    expect(mockStop).toBeCalled();
   });
 });

@@ -7,13 +7,13 @@ import API from "../scripts/api";
 import { ThemeDark } from "../scripts/components/popup/theme";
 import Popup from "../scripts/components/popup/popup";
 
-import { chids, cleanup, expectMessage, mockMessageReturnValue } from "./utils";
+import { chids, expectMessage, mockMessageReturnValue } from "./utils";
 
 /* -------------------------------------------------------------------------- */
 /*                                 Empty Popup                                */
 /* -------------------------------------------------------------------------- */
 
-describe("popup with no chids", () => {
+describe("popup with no change-ids", () => {
   beforeEach(() => {
     mockMessageReturnValue(API.EXISTS_CONFIG, undefined, false);
     mockMessageReturnValue(API.GET_DATA, undefined, {});
@@ -110,7 +110,7 @@ describe("popup with no chids", () => {
 /*                            Popup containing data                           */
 /* -------------------------------------------------------------------------- */
 
-describe("popup with chids", () => {
+describe("popup with change-ids", () => {
   beforeEach(() => {
     console.log = jest.fn();
     mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
@@ -119,7 +119,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("show changes and action buttons are enabled", async () => {
+  test("show change-ids and action buttons are enabled", async () => {
     render(<Popup isTesting={true} />);
 
     // In the first render, popup asks background service for chids
@@ -151,7 +151,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add a new change", async () => {
+  test("add a new change-id", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -170,7 +170,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "123456");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -181,7 +181,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("remove a change", async () => {
+  test("remove a change-id", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -197,7 +197,7 @@ describe("popup with chids", () => {
     const checkbox = screen.getByLabelText(`select-row-${chids[1].id}`);
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click on checkbox
     userEvent.click(checkbox);
@@ -215,7 +215,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("remove two changes", async () => {
+  test("remove two change-ids", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -232,7 +232,7 @@ describe("popup with chids", () => {
     const checkbox2 = screen.getByLabelText(`select-row-${chids[2].id}`);
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click on checkboxes
     userEvent.click(checkbox1);
@@ -253,7 +253,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("remove all changes", async () => {
+  test("remove all change-ids", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -269,7 +269,7 @@ describe("popup with chids", () => {
     const checkboxes = screen.getByLabelText("select-all-rows");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click on checkboxes
     userEvent.click(checkboxes);
@@ -298,7 +298,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add a new change and receive a success update", async () => {
+  test("add a new change-id and receive a success update", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -317,7 +317,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "223344");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -351,7 +351,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add a new change and receive a fail update", async () => {
+  test("add a new change-id and receive a fail update", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -370,7 +370,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "223344");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -401,7 +401,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add two changes and receive a success update", async () => {
+  test("add two change-ids and receive a success update", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -420,7 +420,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "223344");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -438,7 +438,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "556677");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -483,7 +483,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add two changes and receive a fail update", async () => {
+  test("add two change-ids and receive a fail update", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -502,7 +502,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "223344");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -520,7 +520,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "556677");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -557,7 +557,7 @@ describe("popup with chids", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("add two changes and receive a mixed update", async () => {
+  test("add two change-ids and receive a mixed update", async () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
@@ -576,7 +576,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "223344");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));
@@ -594,7 +594,7 @@ describe("popup with chids", () => {
     userEvent.type(screen.getByLabelText("inputchange"), "556677");
 
     // Cleanup any mock call to webextension api
-    cleanup();
+    browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
     userEvent.click(screen.getByLabelText("savechange"));

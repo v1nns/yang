@@ -24,7 +24,7 @@ const gerrit = {
         )
         .then((response) => (response.status == 200 ? response.data : {}));
     } catch (err) {
-      console.log("chid:", chid, "err code:", err.response.status);
+      console.log("Change-Id:", chid, "Error:", err);
       data = { id: chid.toString(), error: true };
     }
 
