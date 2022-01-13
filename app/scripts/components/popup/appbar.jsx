@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -55,5 +56,11 @@ function YangAppBar({ dark, onClickSettings, onClickDarkMode }) {
     </AppBar>
   );
 }
+
+YangAppBar.propTypes = {
+  dark: PropTypes.bool.isRequired,
+  onClickSettings: PropTypes.func.isRequired,
+  onClickDarkMode: PropTypes.func.isRequired,
+};
 
 export default YangAppBar;

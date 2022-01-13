@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+
 import { isEmpty } from "lodash";
 
 import { ThemeDark } from "./theme";
@@ -25,7 +27,7 @@ function Popup({ isTesting }) {
     return () => browser.runtime.onMessage.removeListener(handleUpdate);
   }, []);
 
-  function handleUpdate(request, sender) {
+  function handleUpdate(request) {
     console.log(`Popup received a message: ${request.type}`);
     if (request.type == API.UPDATE_DATA) {
       setUpdated(request.data);
@@ -63,11 +65,11 @@ function Popup({ isTesting }) {
   /*                                 Handlers                                 */
   /* ------------------------------------------------------------------------ */
 
-  const handleClickSettings = (e) => {
+  const handleClickSettings = () => {
     browser.runtime.openOptionsPage();
   };
 
-  const handleClickDarkMode = (e) => {
+  const handleClickDarkMode = () => {
     // save it into browser local storage
     browser.storage.local.set({ darkMode: JSON.stringify(!darkMode) });
 
@@ -116,6 +118,10 @@ function Popup({ isTesting }) {
 
 Popup.defaultProps = {
   isTesting: false,
+};
+
+Popup.propTypes = {
+  isTesting: PropTypes.bool.isRequired,
 };
 
 export default Popup;
