@@ -45,18 +45,15 @@ const gerrit = {
 /* ------ Get latest label entry (considering date value) in array list ----- */
 
 function filterLabel(items) {
-  let value = 0,
-    date = null;
-  for (const item of items) {
-    if (item.date) {
-      if (item.value == -2) {
-        return item.value;
-      }
+  const reviews = items.filter((obj) => obj.value != 0);
 
-      if (date == null || Date.parse(item.date) > date) {
-        value = item.value;
-        date = Date.parse(item.date);
-      }
+  // Get the first value
+  let value = reviews[0].value;
+
+  // Compare with the rest and return the smaller value
+  for (let index = 1; index < reviews.length; index++) {
+    if (reviews[index].value < value) {
+      value = item.value;
     }
   }
   return value;
