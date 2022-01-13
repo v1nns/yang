@@ -48,7 +48,7 @@ function filterLabel(items) {
   const reviews = items.filter((obj) => obj.value != 0);
 
   // Get the first value
-  let value = reviews[0].value;
+  let value = reviews.length != 0 ? reviews[0].value : 0;
 
   // Compare with the rest and return the smaller value
   for (let index = 1; index < reviews.length; index++) {
@@ -56,6 +56,7 @@ function filterLabel(items) {
       value = item.value;
     }
   }
+
   return value;
 }
 
