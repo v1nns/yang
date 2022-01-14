@@ -7,6 +7,7 @@ const Types = {
   TEST_ENDPOINT: "test_endpoint",
   RESTART_SERVICE: "restart_service",
   EXISTS_CONFIG: "config_exists",
+  OPEN_CHANGE: "open_change",
 };
 
 export const Notifications = {

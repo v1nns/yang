@@ -85,6 +85,10 @@ function Popup({ isTesting }) {
     browser.runtime.sendMessage({ type: API.REMOVE_CHANGES, data: ids });
   };
 
+  const handleDoubleClickChange = (row) => {
+    browser.runtime.sendMessage({ type: API.OPEN_CHANGE, data: row.id });
+  };
+
   /* ------------------------------------------------------------------------ */
   /*                                 Rendering                                */
   /* ------------------------------------------------------------------------ */
@@ -98,18 +102,19 @@ function Popup({ isTesting }) {
       }}
     >
       <AppBar
+        dark={darkMode}
         onClickSettings={handleClickSettings}
         onClickDarkMode={handleClickDarkMode}
-        dark={darkMode}
       />
 
       <ChidTable
         chids={changes}
         updated={updated}
-        onAddChange={handleAddChange}
-        onRemoveChanges={handleRemoveChanges}
         dark={darkMode}
         emptyConfig={disabled}
+        onAddChange={handleAddChange}
+        onRemoveChanges={handleRemoveChanges}
+        onChangeDoubleClick={handleDoubleClickChange}
         isTesting={isTesting}
       />
     </div>

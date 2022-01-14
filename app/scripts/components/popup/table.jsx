@@ -483,9 +483,10 @@ function ChidTable({
   chids,
   updated,
   emptyConfig,
-  isTesting,
   onAddChange,
   onRemoveChanges,
+  onChangeDoubleClick,
+  isTesting,
 }) {
   // Constants
   const [maxEntriesPerPage] = useState(5);
@@ -745,6 +746,7 @@ function ChidTable({
         selectableRows={toggleSelection}
         clearSelectedRows={toggleCleared}
         onSelectedRowsChange={handleRowSelected}
+        onRowDoubleClicked={onChangeDoubleClick}
         pagination
         paginationResetDefaultPage={toggleResetPagination}
         paginationPerPage={maxEntriesPerPage}

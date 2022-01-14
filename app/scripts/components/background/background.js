@@ -84,6 +84,8 @@ export function handleMessage(request) {
       return triggerRestartService();
     case API.EXISTS_CONFIG:
       return existsConfig();
+    case API.OPEN_CHANGE:
+      return openChange(request);
   }
   return false;
 }
@@ -189,4 +191,18 @@ async function existsConfig() {
   const result = await Storage.isConfigSet();
 
   return Promise.resolve({ response: result });
+}
+
+/* ---------------------- Open Change-Id in a new page ---------------------- */
+
+async function openChange(request) {
+  console.log(`openChange received data: ${request.data}`);
+  const options = await Storage.getOptions();
+
+  if (options.endpoint !== undefined) {
+    const url = `${options.endpoint}/${request.data}`;
+    browser.tabs.create({
+      url: url,
+    });
+  }
 }
