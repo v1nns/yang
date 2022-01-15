@@ -47,5 +47,10 @@
     "<all_urls>",
     "notifications",
     "storage"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "virtual@long.array"
+    }
+  }
 }
