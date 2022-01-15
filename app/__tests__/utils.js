@@ -29,8 +29,12 @@ export function expectStorageSave(data) {
   expect(browser.storage.local.set).toBeCalledWith(data);
 }
 
+export function expectOpenNewPage(data) {
+  expect(browser.tabs.create).toBeCalledWith(data);
+}
+
 /* -------------------------------------------------------------------------- */
-/*                               Mock Functions                               */
+/*                             Mock Return Values                             */
 /* -------------------------------------------------------------------------- */
 
 export function mockMessageReturnValue(type, data, result) {
@@ -96,42 +100,5 @@ export function mockRejectedAxiosGetOnce(url, options, result) {
         },
       }
     )
-    .mockResolvedValueOnce({ response: result });
+    .mockRejectedValueOnce({ response: result });
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                  Mock Data                                 */
-/* -------------------------------------------------------------------------- */
-
-export const chids = [
-  {
-    subject: "Expose index of the group for a line",
-    status: "NEW",
-    id: "326205",
-    verified: -1,
-    codeReview: 0,
-  },
-  {
-    subject: "Validate reviewer filters",
-    status: "NEW",
-    id: "269047",
-    verified: 1,
-    codeReview: 0,
-  },
-  {
-    subject: "Abstract Publisher/Subscriber into generic interfaces",
-    status: "MERGED",
-    id: "321037",
-    verified: 1,
-    codeReview: 2,
-  },
-];
-
-export const config = {
-  refreshTime: 30,
-  endpoint: "https://hereweare.testing.it",
-  credentials: {
-    email: "johnny@b.goode",
-    password: "ultrasecretpassword",
-  },
-};

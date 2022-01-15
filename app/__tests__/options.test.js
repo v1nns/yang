@@ -7,7 +7,6 @@ import API from "../scripts/api";
 import Options from "../scripts/components/options/options";
 
 import {
-  config,
   expectStorageSave,
   expectMessage,
   geti18nMessage,
@@ -15,6 +14,7 @@ import {
   mockMessageReturnValue,
   mockStorageValue,
 } from "./utils";
+import { config } from "./mock";
 
 /* -------------------------------------------------------------------------- */
 /*                                Empty Options                               */

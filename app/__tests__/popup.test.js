@@ -7,7 +7,8 @@ import API from "../scripts/api";
 import { ThemeDark } from "../scripts/components/popup/theme";
 import Popup from "../scripts/components/popup/popup";
 
-import { chids, expectMessage, mockMessageReturnValue } from "./utils";
+import { expectMessage, mockMessageReturnValue } from "./utils";
+import { chids } from "./mock";
 
 /* -------------------------------------------------------------------------- */
 /*                                 Empty Popup                                */

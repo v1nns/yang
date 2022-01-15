@@ -1,9 +1,8 @@
 import API from "../scripts/api";
 
 import {
-  chids,
-  config,
   expectStorageSave,
+  expectOpenNewPage,
   mockStorageValue,
   mockStorageValueOnce,
   mockResolvedAxiosGetOnce,
@@ -20,6 +19,8 @@ import {
 } from "../scripts/components/background/background";
 
 import Service from "../scripts/components/background/polling";
+
+import { chids, config, labelApproved, labelRejected } from "./mock";
 
 /* -------------------------------------------------------------------------- */
 /*                           Empty Background Script                          */
@@ -207,6 +208,18 @@ describe("background script with empty config", () => {
     expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("receive open change message", async () => {
+    const request = { type: API.OPEN_CHANGE, data: "123456" };
+    const result = await handleMessage(request);
+
+    expect(result).toEqual(true);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
+    expect(browser.tabs.create).not.toBeCalled();
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -333,6 +346,23 @@ describe("background script with config and no service running", () => {
     expect(polling).toBe(false);
     expect(restart).toBe(false);
   });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("receive open change message", async () => {
+    const request = {
+      type: API.OPEN_CHANGE,
+      data: "326205",
+    };
+    const result = await handleMessage(request);
+
+    expect(result).toBe(true);
+    expect(polling).toBe(false);
+    expect(restart).toBe(false);
+
+    const url = `${config.endpoint}/326205`;
+    expectOpenNewPage({ url });
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -340,6 +370,9 @@ describe("background script with config and no service running", () => {
 /* -------------------------------------------------------------------------- */
 
 describe("polling service running with popup closed", () => {
+  const mockRestart = jest.fn();
+  const mockStop = jest.fn();
+
   beforeAll(() => {
     console.log = jest.fn();
     browser.extension.getViews = jest.fn();
@@ -358,7 +391,7 @@ describe("polling service running with popup closed", () => {
 
   /* ------------------------------------------------------------------------ */
 
-  test("run service and query existent change-ids", async () => {
+  test("run service, query existent change-ids and get merged status", async () => {
     // Mock storage to return a list of change-ids
     mockStorageValue("changes", JSON.stringify(chids));
 
@@ -371,12 +404,8 @@ describe("polling service running with popup closed", () => {
           subject: chid.subject,
           status: "MERGED",
           labels: {
-            Verified: {
-              all: [{ value: 1, date: "2022-01-01 11:07:42.000000000" }],
-            },
-            "Code-Review": {
-              all: [{ value: 2, date: "2022-01-01 11:07:42.000000000" }],
-            },
+            Verified: labelApproved,
+            "Code-Review": labelApproved,
           },
         };
         mockResolvedAxiosGetOnce(url, config, {
@@ -386,34 +415,40 @@ describe("polling service running with popup closed", () => {
       }
     }
 
-    const mockRestart = jest.fn();
-    const mockStop = jest.fn();
     await Service.run(restart, mockRestart, mockStop);
 
     // Create expectation for all change-ids
     const changes = chids.map((obj) => {
       return {
         ...obj,
-        status: "MERGED",
-        verified: 1,
-        codeReview: 2,
+        ...(obj.status != "MERGED"
+          ? {
+              status: "MERGED",
+              verified: 1,
+              codeReview: 1,
+            }
+          : {}),
       };
     });
+
     // Create expectation for all change-ids with an update
     const updated = chids
       .filter((obj) => obj.status != "MERGED")
-      .map((hehe) => {
+      .map((filtered) => {
         return {
-          ...hehe,
+          ...filtered,
           status: "MERGED",
           verified: 1,
-          codeReview: 2,
+          codeReview: 1,
           updated: true,
         };
       });
 
+    // Update info on storage
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expect(mockRestart).not.toBeCalled();
     expect(mockStop).toBeCalled();
   });
 });

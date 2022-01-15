@@ -50,15 +50,15 @@ const Colors = {
 /* -------------------------------------------------------------------------- */
 
 const ThemeDark = {
-  background: "rgb(34, 39, 46)",
-  foreground: "rgb(173, 186, 199)",
-  row: "rgb(118, 131, 144)",
+  background: "rgb(43, 42, 51)",
+  foreground: "rgb(223, 226, 229)",
+  row: "rgb(168, 181, 194)",
   appbar: {
     first: "rgb(45, 51, 59)",
     last: "rgb(65, 71, 79)",
   },
   table: {
-    border: "rgba(81, 81, 81, 1)",
+    border: "rgb(66, 65, 77)",
     divider: "rgba(173, 186, 199, .12)",
   },
   stripeEffect: {
@@ -113,7 +113,7 @@ createTheme("darkest", {
     text: "rgb(255, 255, 255)",
   },
   divider: {
-    default: "rgba(81, 81, 81, 1)",
+    default: "rgba(66, 65, 77, .8)",
   },
   button: {
     default: "rgb(255, 255, 255)",

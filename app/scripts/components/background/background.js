@@ -205,4 +205,6 @@ async function openChange(request) {
       url: url,
     });
   }
+
+  return true;
 }
