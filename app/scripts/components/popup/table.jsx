@@ -116,6 +116,7 @@ const EmptyData = (emptyConfig) => {
   let title = "",
     subtitle = "";
   if (emptyConfig) {
+    // TODO: use dictionary here
     title = "Empty Settings";
     subtitle = "Setup configuration settings before adding a Change-Id.";
   } else {
@@ -450,13 +451,10 @@ const columns = (dark) => {
       style: {
         userSelect: "none",
         draggable: false,
-        // Add manually side borders around this label
+        // Add manually one-side border around this label
         borderLeftStyle: "solid",
         borderLeftWidth: "1px",
         borderLeftColor: dividerColor,
-        borderRightStyle: "solid",
-        borderRightWidth: "1px",
-        borderRightColor: dividerColor,
       },
       conditionalCellStyles: labelStyle("codeReview"),
       cell: (row) => <Label value={row.codeReview} />,
@@ -467,7 +465,14 @@ const columns = (dark) => {
       width: "30px",
       compact: true,
       center: true,
-      style: { userSelect: "none", draggable: false },
+      style: {
+        userSelect: "none",
+        draggable: false,
+        // Add manually one-side border around this label
+        borderLeftStyle: "solid",
+        borderLeftWidth: "1px",
+        borderLeftColor: dividerColor,
+      },
       conditionalCellStyles: labelStyle("verified"),
       cell: (row) => <Label value={row.verified} />,
     },
