@@ -8,6 +8,9 @@ import {
   mockResolvedAxiosGetOnce,
   mockRejectedAxiosGetOnce,
   mockPopupState,
+  initNotificationMock,
+  destroyNotificationMock,
+  expectCreateNotification,
 } from "./utils";
 
 import {
@@ -370,23 +373,20 @@ describe("background script with config and no service running", () => {
 /* -------------------------------------------------------------------------- */
 
 describe("polling service running with popup closed", () => {
+  // Internal functions used by service
   const mockRestart = jest.fn();
   const mockStop = jest.fn();
 
   beforeAll(() => {
     console.log = jest.fn();
-    browser.extension.getViews = jest.fn();
-    browser.browserAction.setBadgeText = jest.fn();
-    browser.notifications.create = jest.fn();
+    initNotificationMock();
 
     mockStorageValue("options", JSON.stringify(config));
     mockPopupState(false);
   });
 
   afterAll(() => {
-    browser.extension.getViews.mockRestore();
-    browser.browserAction.setBadgeText.mockRestore();
-    browser.notifications.create.mockRestore();
+    destroyNotificationMock();
   });
 
   beforeEach(() => {
@@ -431,9 +431,11 @@ describe("polling service running with popup closed", () => {
       },
     ];
 
-    // Update info on storage
+    // Create expectations
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(1);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).toBeCalled();
@@ -476,9 +478,11 @@ describe("polling service running with popup closed", () => {
       },
     ];
 
-    // Update info on storage
+    // Create expectations
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(1);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).not.toBeCalled();
@@ -521,9 +525,11 @@ describe("polling service running with popup closed", () => {
       },
     ];
 
-    // Update info on storage
+    // Create expectations
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(1);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).not.toBeCalled();
@@ -566,9 +572,11 @@ describe("polling service running with popup closed", () => {
       },
     ];
 
-    // Update info on storage
+    // Create expectations
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(1);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).not.toBeCalled();
@@ -629,9 +637,11 @@ describe("polling service running with popup closed", () => {
         };
       });
 
-    // Update info on storage
+    // Create expectations
     expectStorageSave({ changes: JSON.stringify(changes) });
     expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(2);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).toBeCalled();

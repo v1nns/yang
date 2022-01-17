@@ -1,6 +1,8 @@
 import axios from "axios";
 import { when } from "jest-when";
 
+import { Notifications } from "../scripts/api";
+
 // Mock Axios
 jest.mock("axios");
 
@@ -31,6 +33,43 @@ export function expectStorageSave(data) {
 
 export function expectOpenNewPage(data) {
   expect(browser.tabs.create).toBeCalledWith(data);
+}
+
+export function expectCreateNotification(changesUpdated) {
+  const message = `Updated ${changesUpdated} Change-Id${
+    changesUpdated > 1 ? "s" : ""
+  }`;
+
+  expect(browser.browserAction.setBadgeText).toBeCalledWith({
+    text: `${changesUpdated}`,
+  });
+
+  expect(browser.notifications.create).toBeCalledWith(
+    Notifications.CHANGE_UPDATE,
+    {
+      type: "basic",
+      priority: 1,
+      iconUrl: browser.runtime.getURL("images/icon-128.png"),
+      title: "Yet Another Notifier for Gerrit",
+      message: message,
+    }
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Mock Initialization                            */
+/* -------------------------------------------------------------------------- */
+
+export function initNotificationMock() {
+  browser.extension.getViews = jest.fn();
+  browser.browserAction.setBadgeText = jest.fn();
+  browser.notifications.create = jest.fn();
+}
+
+export function destroyNotificationMock() {
+  browser.extension.getViews.mockRestore();
+  browser.browserAction.setBadgeText.mockRestore();
+  browser.notifications.create.mockRestore();
 }
 
 /* -------------------------------------------------------------------------- */
