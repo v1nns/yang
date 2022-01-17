@@ -1,6 +1,7 @@
 import API from "../scripts/api";
 
 import {
+  expectMessage,
   expectStorageSave,
   expectOpenNewPage,
   mockStorageValue,
@@ -642,6 +643,79 @@ describe("polling service running with popup closed", () => {
     expectStorageSave({ updated: JSON.stringify(updated) });
 
     expectCreateNotification(2);
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).toBeCalled();
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/*                      Polling Service with popup opened                     */
+/* -------------------------------------------------------------------------- */
+
+describe("polling service running with popup opened", () => {
+  // Internal functions used by service
+  const mockRestart = jest.fn();
+  const mockStop = jest.fn();
+
+  beforeAll(() => {
+    console.log = jest.fn();
+    initNotificationMock();
+
+    mockStorageValue("options", JSON.stringify(config));
+    mockPopupState(true);
+  });
+
+  afterAll(() => {
+    destroyNotificationMock();
+  });
+
+  beforeEach(() => {
+    mockRestart.mockClear();
+    mockStop.mockClear();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id with both labels approved and merged status", async () => {
+    // Mock storage to return a single change-id
+    const chid = chids[0];
+    mockStorageValue("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    const result = {
+      _number: Number(chid.id),
+      subject: chid.subject,
+      status: "MERGED",
+      labels: {
+        Verified: labelApproved,
+        "Code-Review": labelApproved,
+      },
+    };
+    mockResolvedAxiosGetOnce(url, config, {
+      status: 200,
+      data: JSON.stringify(result),
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [{ ...chid, status: "MERGED", verified: 1, codeReview: 1 }];
+    const updated = [
+      {
+        ...chid,
+        status: "MERGED",
+        verified: 1,
+        codeReview: 1,
+        updated: true,
+      },
+    ];
+
+    // Create expectations
+    expectStorageSave({ changes: JSON.stringify(changes) });
+
+    expectMessage(API.UPDATE_DATA, updated);
 
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).toBeCalled();

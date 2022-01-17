@@ -102,7 +102,7 @@ export function mockAnyi18nMessage() {
 }
 
 export function mockPopupState(opened) {
-  const result = opened ? 1 : 0;
+  const result = opened ? [1] : [];
   when(browser.extension.getViews)
     .calledWith({ type: "popup" })
     .mockReturnValue(result);
