@@ -389,6 +389,191 @@ describe("polling service running with popup closed", () => {
     browser.notifications.create.mockRestore();
   });
 
+  beforeEach(() => {
+    mockRestart.mockClear();
+    mockStop.mockClear();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id with both labels approved and merged status", async () => {
+    // Mock storage to return a single change-id
+    const chid = chids[0];
+    mockStorageValue("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    const result = {
+      _number: Number(chid.id),
+      subject: chid.subject,
+      status: "MERGED",
+      labels: {
+        Verified: labelApproved,
+        "Code-Review": labelApproved,
+      },
+    };
+    mockResolvedAxiosGetOnce(url, config, {
+      status: 200,
+      data: JSON.stringify(result),
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [{ ...chid, status: "MERGED", verified: 1, codeReview: 1 }];
+    const updated = [
+      {
+        ...chid,
+        status: "MERGED",
+        verified: 1,
+        codeReview: 1,
+        updated: true,
+      },
+    ];
+
+    // Update info on storage
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).toBeCalled();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id with codeReview rejected", async () => {
+    // Mock storage to return a single change-id
+    const chid = chids[0];
+    mockStorageValue("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    const result = {
+      _number: Number(chid.id),
+      subject: chid.subject,
+      status: "NEW",
+      labels: {
+        Verified: labelApproved,
+        "Code-Review": labelRejected,
+      },
+    };
+    mockResolvedAxiosGetOnce(url, config, {
+      status: 200,
+      data: JSON.stringify(result),
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [{ ...chid, status: "NEW", verified: 1, codeReview: -2 }];
+    const updated = [
+      {
+        ...chid,
+        status: "NEW",
+        verified: 1,
+        codeReview: -2,
+        updated: true,
+      },
+    ];
+
+    // Update info on storage
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).not.toBeCalled();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id with verify rejected", async () => {
+    // Mock storage to return a single change-id
+    const chid = chids[0];
+    mockStorageValue("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    const result = {
+      _number: Number(chid.id),
+      subject: chid.subject,
+      status: "NEW",
+      labels: {
+        Verified: labelRejected,
+        "Code-Review": labelApproved,
+      },
+    };
+    mockResolvedAxiosGetOnce(url, config, {
+      status: 200,
+      data: JSON.stringify(result),
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [{ ...chid, status: "NEW", verified: -2, codeReview: 1 }];
+    const updated = [
+      {
+        ...chid,
+        status: "NEW",
+        verified: -2,
+        codeReview: 1,
+        updated: true,
+      },
+    ];
+
+    // Update info on storage
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).not.toBeCalled();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id with both labels rejected", async () => {
+    // Mock storage to return a single change-id
+    const chid = chids[0];
+    mockStorageValue("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    const result = {
+      _number: Number(chid.id),
+      subject: chid.subject,
+      status: "NEW",
+      labels: {
+        Verified: labelRejected,
+        "Code-Review": labelRejected,
+      },
+    };
+    mockResolvedAxiosGetOnce(url, config, {
+      status: 200,
+      data: JSON.stringify(result),
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [{ ...chid, status: "NEW", verified: -2, codeReview: -2 }];
+    const updated = [
+      {
+        ...chid,
+        status: "NEW",
+        verified: -2,
+        codeReview: -2,
+        updated: true,
+      },
+    ];
+
+    // Update info on storage
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).not.toBeCalled();
+  });
+
   /* ------------------------------------------------------------------------ */
 
   test("run service, query existent change-ids and get merged status", async () => {
