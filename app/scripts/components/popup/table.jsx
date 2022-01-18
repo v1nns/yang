@@ -5,6 +5,8 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
+import PropTypes from "prop-types";
+
 import { differenceBy, findIndex, keyBy, merge, remove, values } from "lodash";
 
 // Components
@@ -93,10 +95,12 @@ const ColumnTitle = ({ title, hint, dark }) => {
   const ConditionalHint = ({ condition, children }) =>
     condition ? <Tooltip title={hint}>{children}</Tooltip> : children;
 
-  const themeStyle = {
-    ...(dark && { color: ThemeDark.foreground }),
+  ConditionalHint.propTypes = {
+    condition: PropTypes.bool.isRequired,
+    children: PropTypes.element.isRequired,
   };
 
+  const themeStyle = { ...(dark && { color: ThemeDark.foreground }) };
   const show = hint !== undefined;
   return (
     <ConditionalHint condition={show}>
@@ -767,5 +771,54 @@ function ChidTable({
     </div>
   );
 }
+
+ColumnTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+  hint: PropTypes.string,
+  dark: PropTypes.bool.isRequired,
+};
+
+EditableCell.propTypes = {
+  row: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
+  column: PropTypes.object.isRequired,
+  col: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onKeyDown: PropTypes.func.isRequired,
+};
+
+Label.propTypes = {
+  value: PropTypes.number,
+};
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  dark: PropTypes.bool.isRequired,
+  disableButtons: PropTypes.bool.isRequired,
+};
+
+CustomTablePagination.propTypes = {
+  rowsPerPage: PropTypes.number.isRequired,
+  rowCount: PropTypes.number.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  dark: PropTypes.bool.isRequired,
+  disableButtons: PropTypes.bool.isRequired,
+};
+
+ChidTable.propTypes = {
+  dark: PropTypes.bool.isRequired,
+  chids: PropTypes.array.isRequired,
+  updated: PropTypes.array.isRequired,
+  emptyConfig: PropTypes.bool.isRequired,
+  onAddChange: PropTypes.func.isRequired,
+  onRemoveChanges: PropTypes.func.isRequired,
+  onChangeDoubleClick: PropTypes.func.isRequired,
+  isTesting: PropTypes.bool.isRequired,
+};
 
 export default ChidTable;

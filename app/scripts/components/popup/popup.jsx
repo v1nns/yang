@@ -30,7 +30,7 @@ function Popup({ isTesting }) {
   function handleUpdate(request) {
     console.log(`Popup received a message: ${request.type}`);
     if (request.type == API.UPDATE_DATA) {
-      setUpdated(request.data);
+      setUpdated(Object.values(request.data));
     }
     return false;
   }
@@ -58,7 +58,7 @@ function Popup({ isTesting }) {
 
     // Changes
     const result = await browser.runtime.sendMessage({ type: API.GET_DATA });
-    setChanges(result.response);
+    setChanges(Object.values(result.response));
   };
 
   /* ------------------------------------------------------------------------ */

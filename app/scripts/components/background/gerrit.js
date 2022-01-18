@@ -60,7 +60,7 @@ function filterLabel(items) {
 
   for (const field of summarizedFields) {
     // Get account id from summarized value
-    if (items.hasOwnProperty(field)) {
+    if (Object.prototype.hasOwnProperty.call(items, field)) {
       account_id = items[field]["_account_id"];
       break;
     }
