@@ -42,7 +42,7 @@ function YangAppBar({ dark, onClickSettings, onClickDarkMode }) {
           </Tooltip>
           <Tooltip title="Dark Mode">
             <IconButton
-              aria-label="darkmode"
+              aria-label="dark-mode"
               size="small"
               onClick={onClickDarkMode}
               disableRipple

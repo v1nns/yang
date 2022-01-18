@@ -121,6 +121,7 @@ function Popup({ isTesting }) {
   );
 }
 
+// TODO: ideally, should remove isTesting from component
 Popup.defaultProps = {
   isTesting: false,
 };

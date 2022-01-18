@@ -143,14 +143,14 @@ const EmptyData = (emptyConfig) => {
             <Info color="primary" />
           </Grid>
           <Grid item>
-            <Typography aria-label="tableinfo" variant="subtitle2">
+            <Typography aria-label="table-info" variant="subtitle2">
               {title}
             </Typography>
           </Grid>
         </Grid>
       </Grid>
       <Grid item>
-        <Typography aria-label="tableinfo" variant="caption">
+        <Typography aria-label="table-info" variant="caption">
           {subtitle}
         </Typography>
       </Grid>
@@ -166,7 +166,7 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
     <div>
       <Tooltip title="Add Change-Id">
         <IconButton
-          aria-label="tableaction"
+          aria-label="table-action"
           color="primary"
           size="small"
           onClick={addHandler}
@@ -181,7 +181,7 @@ const Actions = (dark, disableButtons, addHandler, selectionHandler) => {
       </Tooltip>
       <Tooltip title="Toggle selection">
         <IconButton
-          aria-label="tableaction"
+          aria-label="table-action"
           color="primary"
           size="small"
           onClick={selectionHandler}
@@ -204,7 +204,7 @@ const ContextActions = (dark, deleteHandler) => {
   const classes = getButtonStyle(dark);
   return (
     <IconButton
-      aria-label="deletechanges"
+      aria-label="delete-changes"
       color="secondary"
       onClick={deleteHandler}
       classes={{
@@ -243,7 +243,7 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
     return (
       <Fade in={true} timeout={900}>
         <input
-          aria-label="inputchange"
+          aria-label="input-change"
           type={typeof column.selector(row) || "text"}
           name={column.selector(row)}
           style={{ width: "100%" }}
@@ -301,7 +301,7 @@ const TablePaginationActions = (props) => {
       <IconButton
         onClick={handleBackButtonClick}
         disabled={page === 0 || disableButtons}
-        aria-label="previous page"
+        aria-label="previous-page"
         classes={{
           root: classes.root,
           disabled: classes.disabled,
@@ -312,7 +312,7 @@ const TablePaginationActions = (props) => {
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1 || disableButtons}
-        aria-label="next page"
+        aria-label="next-page"
         classes={{
           root: classes.root,
           disabled: classes.disabled,
@@ -503,7 +503,7 @@ function ChidTable({
   const [disableActions, setDisableActions] = useState(false);
 
   // Timeout to show animation/transition
-  const animationTimeout = isTesting ? 200 : 2000;
+  const animationTimeout = isTesting ? 50 : 2000;
 
   /* --------------------------- Load initial data -------------------------- */
 
@@ -681,7 +681,7 @@ function ChidTable({
               <Fade in={true} timeout={900}>
                 <div style={{ width: "100%" }}>
                   <IconButton
-                    aria-label="savechange"
+                    aria-label="save-change"
                     color="primary"
                     size="small"
                     style={{ color: Colors.label.ok }}
@@ -690,7 +690,7 @@ function ChidTable({
                     <Done fontSize="inherit" />
                   </IconButton>
                   <IconButton
-                    aria-label="discardchange"
+                    aria-label="discard-change"
                     color="secondary"
                     size="small"
                     style={{ color: Colors.label.fail }}

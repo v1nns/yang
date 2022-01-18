@@ -35,7 +35,7 @@ describe("options without config", () => {
     render(<Options />);
 
     // Get components from DOM
-    const refresh = screen.getByLabelText("refreshtime");
+    const refresh = screen.getByLabelText("refresh-time");
     const endpoint = screen
       .getByTestId("input-endpoint")
       .querySelector("input");
@@ -277,7 +277,7 @@ describe("options with config", () => {
     );
 
     // Get components from DOM
-    const refresh = screen.getByLabelText("refreshtime");
+    const refresh = screen.getByLabelText("refresh-time");
     const endpoint = screen
       .getByTestId("input-endpoint")
       .querySelector("input");

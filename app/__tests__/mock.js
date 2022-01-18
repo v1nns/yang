@@ -26,6 +26,51 @@ export const chids = [
   },
 ];
 
+export const multipleChids = [
+  {
+    subject: "Expose index of the group for a line",
+    status: "NEW",
+    id: "326205",
+    verified: -1,
+    codeReview: 0,
+  },
+  {
+    subject: "Validate reviewer filters",
+    status: "NEW",
+    id: "269047",
+    verified: 1,
+    codeReview: 0,
+  },
+  {
+    subject: "Abstract Publisher/Subscriber into generic interfaces",
+    status: "MERGED",
+    id: "321037",
+    verified: 1,
+    codeReview: 2,
+  },
+  {
+    subject: "Do not expose index of the group for a line",
+    status: "NEW",
+    id: "326206",
+    verified: -1,
+    codeReview: 0,
+  },
+  {
+    subject: "Do not validate reviewer filters",
+    status: "NEW",
+    id: "269048",
+    verified: 1,
+    codeReview: 0,
+  },
+  {
+    subject: "Abstract Publisher/Subscriber into specific interfaces",
+    status: "MERGED",
+    id: "321038",
+    verified: 1,
+    codeReview: 2,
+  },
+];
+
 /* -------------------------------------------------------------------------- */
 
 export const config = {

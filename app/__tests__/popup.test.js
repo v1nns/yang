@@ -8,7 +8,7 @@ import { ThemeDark } from "../scripts/components/popup/theme";
 import Popup from "../scripts/components/popup/popup";
 
 import { expectMessage, mockMessageReturnValue } from "./utils";
-import { chids } from "./mock";
+import { chids, multipleChids } from "./mock";
 
 /* -------------------------------------------------------------------------- */
 /*                                 Empty Popup                                */
@@ -26,7 +26,7 @@ describe("popup with no change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Simulate a click on Dark Mode button
-    userEvent.click(screen.getByLabelText("darkmode"));
+    userEvent.click(screen.getByLabelText("dark-mode"));
 
     // Expect background color to change
     await waitFor(() =>
@@ -59,14 +59,14 @@ describe("popup with no change-ids", () => {
       expectMessage(API.GET_DATA);
     });
 
-    const actionButtons = screen.getAllByLabelText("tableaction");
+    const actionButtons = screen.getAllByLabelText("table-action");
 
     // Context action buttons must be disabled
     expect(actionButtons).toHaveLength(2);
     expect(actionButtons[0]).toBeDisabled();
     expect(actionButtons[1]).toBeDisabled();
 
-    const tableInfo = screen.getAllByLabelText("tableinfo");
+    const tableInfo = screen.getAllByLabelText("table-info");
 
     // Table info must show message about empty settings
     expect(tableInfo).toHaveLength(2);
@@ -89,14 +89,14 @@ describe("popup with no change-ids", () => {
       expectMessage(API.GET_DATA);
     });
 
-    const actionButtons = screen.getAllByLabelText("tableaction");
+    const actionButtons = screen.getAllByLabelText("table-action");
 
     // Context action buttons must be disabled
     expect(actionButtons).toHaveLength(2);
     expect(actionButtons[0]).toBeEnabled();
     expect(actionButtons[1]).toBeEnabled();
 
-    const tableInfo = screen.getAllByLabelText("tableinfo");
+    const tableInfo = screen.getAllByLabelText("table-info");
 
     // Table info must show message about empty data
     expect(tableInfo).toHaveLength(2);
@@ -156,28 +156,62 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "123456");
+    userEvent.type(screen.getByLabelText("input-change"), "123456");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "123456"));
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("open input to add a new change-id and discard operation", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render action buttons
+    await waitFor(() => screen.getAllByLabelText("table-action"));
+
+    // Get add a new change button
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
+
+    // Simulate a click on button to add a new change
+    userEvent.click(buttonAddChange);
+
+    // Expect for input component to be shown
+    await waitFor(() => screen.getByLabelText("input-change"));
+
+    // Simulate a user event typing chid
+    userEvent.type(screen.getByLabelText("input-change"), "123456");
+
+    // Cleanup any mock call to webextension api
+    browser.runtime.sendMessage.mockClear();
+
+    // Simulate button click to add new change
+    userEvent.click(screen.getByLabelText("discard-change"));
+
+    // Input field must not exist anymore
+    const inputChange = screen.queryByLabelText("input-change");
+    expect(inputChange).toBeNull();
+
+    // And no message should be sent
+    expect(browser.runtime.sendMessage).not.toBeCalled();
   });
 
   /* ------------------------------------------------------------------------ */
@@ -186,10 +220,10 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get selection mode button
-    const buttonSelectionMode = screen.getAllByLabelText("tableaction")[1];
+    const buttonSelectionMode = screen.getAllByLabelText("table-action")[1];
 
     // Simulate a click for toggling selection mode
     userEvent.click(buttonSelectionMode);
@@ -204,7 +238,7 @@ describe("popup with change-ids", () => {
     userEvent.click(checkbox);
 
     // Simulate button click to remove change
-    const buttonDelete = screen.getByLabelText("deletechanges");
+    const buttonDelete = screen.getByLabelText("delete-changes");
     userEvent.click(buttonDelete);
 
     // Popup will send a message informing to remove change
@@ -220,10 +254,10 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get selection mode button
-    const buttonSelectionMode = screen.getAllByLabelText("tableaction")[1];
+    const buttonSelectionMode = screen.getAllByLabelText("table-action")[1];
 
     // Simulate a click for toggling selection mode
     userEvent.click(buttonSelectionMode);
@@ -240,7 +274,7 @@ describe("popup with change-ids", () => {
     userEvent.click(checkbox2);
 
     // Simulate button click to remove change
-    const buttonDelete = screen.getByLabelText("deletechanges");
+    const buttonDelete = screen.getByLabelText("delete-changes");
     userEvent.click(buttonDelete);
 
     // Popup will send a message informing to remove change
@@ -258,10 +292,10 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get selection mode button
-    const buttonSelectionMode = screen.getAllByLabelText("tableaction")[1];
+    const buttonSelectionMode = screen.getAllByLabelText("table-action")[1];
 
     // Simulate a click for toggling selection mode
     userEvent.click(buttonSelectionMode);
@@ -276,7 +310,7 @@ describe("popup with change-ids", () => {
     userEvent.click(checkboxes);
 
     // Simulate button click to remove change
-    const buttonDelete = screen.getByLabelText("deletechanges");
+    const buttonDelete = screen.getByLabelText("delete-changes");
     userEvent.click(buttonDelete);
 
     // Popup will send a message informing to remove change
@@ -287,7 +321,7 @@ describe("popup with change-ids", () => {
     // Expect no rows
     expect(screen.queryAllByRole("row")).toHaveLength(0);
 
-    const tableInfo = screen.getAllByLabelText("tableinfo");
+    const tableInfo = screen.getAllByLabelText("table-info");
 
     // Table info must show message about empty data
     expect(tableInfo).toHaveLength(2);
@@ -303,25 +337,25 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+    userEvent.type(screen.getByLabelText("input-change"), "223344");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
@@ -356,25 +390,25 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+    userEvent.type(screen.getByLabelText("input-change"), "223344");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
@@ -406,25 +440,25 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+    userEvent.type(screen.getByLabelText("input-change"), "223344");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
@@ -433,16 +467,16 @@ describe("popup with change-ids", () => {
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+    userEvent.type(screen.getByLabelText("input-change"), "556677");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
@@ -488,25 +522,25 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+    userEvent.type(screen.getByLabelText("input-change"), "223344");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
@@ -515,16 +549,16 @@ describe("popup with change-ids", () => {
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+    userEvent.type(screen.getByLabelText("input-change"), "556677");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
@@ -562,25 +596,25 @@ describe("popup with change-ids", () => {
     render(<Popup isTesting={true} />);
 
     // Wait until render action buttons
-    await waitFor(() => screen.getAllByLabelText("tableaction"));
+    await waitFor(() => screen.getAllByLabelText("table-action"));
 
     // Get add a new change button
-    const buttonAddChange = screen.getAllByLabelText("tableaction")[0];
+    const buttonAddChange = screen.getAllByLabelText("table-action")[0];
 
     // Simulate a click on button to add a new change
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "223344");
+    userEvent.type(screen.getByLabelText("input-change"), "223344");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "223344"));
@@ -589,16 +623,16 @@ describe("popup with change-ids", () => {
     userEvent.click(buttonAddChange);
 
     // Expect for input component to be shown
-    await waitFor(() => screen.getByLabelText("inputchange"));
+    await waitFor(() => screen.getByLabelText("input-change"));
 
     // Simulate a user event typing chid
-    userEvent.type(screen.getByLabelText("inputchange"), "556677");
+    userEvent.type(screen.getByLabelText("input-change"), "556677");
 
     // Cleanup any mock call to webextension api
     browser.runtime.sendMessage.mockClear();
 
     // Simulate button click to add new change
-    userEvent.click(screen.getByLabelText("savechange"));
+    userEvent.click(screen.getByLabelText("save-change"));
 
     // Popup will send a message informing to add new change
     await waitFor(() => expectMessage(API.ADD_CHANGE, "556677"));
@@ -631,5 +665,104 @@ describe("popup with change-ids", () => {
       // Expect 4 rows (header + 3 chids + new chid)
       expect(screen.queryAllByRole("row")).toHaveLength(5);
     });
+  });
+});
+
+/* ------------------------------------------------------------------------ */
+/*                     Popup with a bigger list of chids                    */
+/* ------------------------------------------------------------------------ */
+
+describe("popup with multiple pages", () => {
+  beforeEach(() => {
+    console.log = jest.fn();
+    mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
+    mockMessageReturnValue(API.GET_DATA, undefined, multipleChids);
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("go to second page", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render rows
+    await waitFor(() => screen.queryAllByRole("row"));
+
+    let rows = screen.queryAllByRole("row");
+
+    // Expect 6 rows (header + 5 chids)
+    expect(rows).toHaveLength(6);
+
+    // Expect the first 5 change-ids to be visible
+    for (let i = 0, len = multipleChids.length - 1; i < len; i++) {
+      expect(rows[i + 1]).toHaveTextContent(multipleChids[i].subject);
+      expect(rows[i + 1]).toBeVisible();
+    }
+
+    // Get next page button
+    const buttonNextPage = screen.getByLabelText("next-page");
+
+    // Simulate a click on button to next page
+    userEvent.click(buttonNextPage);
+
+    await waitFor(() => {
+      // Expect 2 rows (header + 1 chid)
+      expect(screen.queryAllByRole("row")).toHaveLength(2);
+    });
+
+    rows = screen.queryAllByRole("row");
+
+    // Expect only the last change-id to be visible
+    expect(rows[1]).toHaveTextContent(multipleChids[5].subject);
+    expect(rows[1]).toBeVisible();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("go to second page and go back to the first page", async () => {
+    render(<Popup isTesting={true} />);
+
+    // Wait until render rows
+    await waitFor(() => screen.queryAllByRole("row"));
+
+    let rows = screen.queryAllByRole("row");
+
+    // Expect 6 rows (header + 5 chids)
+    expect(rows).toHaveLength(6);
+
+    // Expect the first 5 change-ids to be visible
+    for (let i = 0, len = multipleChids.length - 1; i < len; i++) {
+      expect(rows[i + 1]).toHaveTextContent(multipleChids[i].subject);
+      expect(rows[i + 1]).toBeVisible();
+    }
+
+    // Get next page button
+    const buttonNextPage = screen.getByLabelText("next-page");
+
+    // Simulate a click on button to next page
+    userEvent.click(buttonNextPage);
+
+    await waitFor(() => {
+      // Expect 2 rows (header + 1 chid)
+      expect(screen.queryAllByRole("row")).toHaveLength(2);
+    });
+
+    // Get previous page button
+    const buttonPreviousPage = screen.getByLabelText("previous-page");
+
+    // Simulate a click on button to next page
+    userEvent.click(buttonPreviousPage);
+
+    await waitFor(() => {
+      // Expect 6 rows (header + 5 chids)
+      expect(screen.queryAllByRole("row")).toHaveLength(6);
+    });
+
+    rows = screen.queryAllByRole("row");
+
+    // Expect the first 5 change-ids to be visible again
+    for (let i = 0, len = multipleChids.length - 1; i < len; i++) {
+      expect(rows[i + 1]).toHaveTextContent(multipleChids[i].subject);
+      expect(rows[i + 1]).toBeVisible();
+    }
   });
 });
