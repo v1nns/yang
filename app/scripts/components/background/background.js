@@ -1,10 +1,10 @@
 import { filter } from "lodash";
-import axios from "axios";
 
 import API from "../../api";
 
 import Storage from "./storage";
 import Service from "./polling";
+import Gerrit from "./gerrit";
 
 // TODO: maybe remove this
 // browser.runtime.onInstalled.addListener((details) => {
@@ -146,30 +146,8 @@ async function removeChanges(request) {
 async function testEndpoint(request) {
   console.log(`testEndpoint received data: ${request.data}`);
   const { endpoint, credentials } = request.data;
-  const url = `${endpoint}/config/server/version`;
 
-  let result = false;
-  try {
-    // TODO: move this to gerrit.js
-    result = await axios
-      .get(
-        url,
-        {},
-        {
-          auth: {
-            username: credentials.email,
-            password: credentials.password,
-          },
-        }
-      )
-      .then((response) => (response.status == 200 ? true : false));
-  } catch (err) {
-    console.log("Error testing endpoint:", endpoint);
-    if (err.response !== undefined) {
-      console.log("err code:", err.response.status);
-    }
-  }
-
+  const result = await Gerrit.test(endpoint, credentials);
   return Promise.resolve({ response: result });
 }
 

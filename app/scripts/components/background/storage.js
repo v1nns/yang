@@ -63,7 +63,7 @@ const storage = {
   /* ------------------------------------------------------------------------ */
 
   async isConfigSet() {
-    // TODO: maybe change this for something like "validateConfig"
+    // TODO: maybe improve this and change for something like "validateConfig"
     const options = await this.getOptions();
     const existsConfig =
       !isEmpty(options) &&

@@ -1,13 +1,18 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import API from "../scripts/api";
 import { ThemeDark } from "../scripts/components/popup/theme";
 import Popup from "../scripts/components/popup/popup";
 
-import { expectMessage, mockMessageReturnValue } from "./utils";
+import {
+  expectMessage,
+  mockAnyi18nMessage,
+  mockMessageReturnValue,
+  toLabelName,
+} from "./utils";
 import { chids, multipleChids } from "./mock";
 
 /* -------------------------------------------------------------------------- */
@@ -18,6 +23,9 @@ describe("popup with no change-ids", () => {
   beforeEach(() => {
     mockMessageReturnValue(API.EXISTS_CONFIG, undefined, false);
     mockMessageReturnValue(API.GET_DATA, undefined, {});
+
+    // Add implementation to return value for any i18n.getMessage call
+    mockAnyi18nMessage();
   });
 
   /* ------------------------------------------------------------------------ */
@@ -116,6 +124,9 @@ describe("popup with change-ids", () => {
     console.log = jest.fn();
     mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
     mockMessageReturnValue(API.GET_DATA, undefined, chids);
+
+    // Add implementation to return value for any i18n.getMessage call
+    mockAnyi18nMessage();
   });
 
   /* ------------------------------------------------------------------------ */
@@ -137,16 +148,18 @@ describe("popup with change-ids", () => {
     expect(rows[0]).toHaveTextContent("CR");
     expect(rows[0]).toHaveTextContent("V");
 
-    // Skip table header row
-    let dummy = 1;
-    for (const elem of chids) {
-      expect(rows[dummy]).toHaveTextContent(elem.id);
-      expect(rows[dummy]).toHaveTextContent(elem.subject);
-      // TODO: should I verify SVG content???
-      // expect(rows[index]).toHaveTextContent(elem.codeReview);
-      // expect(rows[index]).toHaveTextContent(elem.verified);
+    // Skip table header row (that's why the "+ 1")
+    for (const [index, elem] of chids.entries()) {
+      expect(rows[index + 1]).toHaveTextContent(elem.id);
+      expect(rows[index + 1]).toHaveTextContent(elem.subject);
 
-      dummy += 1;
+      const labelCR = toLabelName(elem.codeReview);
+      const codeReview = within(rows[index + 1]).getByLabelText(labelCR);
+      expect(codeReview).not.toBeNull();
+
+      const labelV = toLabelName(elem.verified);
+      const verified = within(rows[index + 1]).getByLabelText(labelV);
+      expect(verified).not.toBeNull();
     }
   });
 
@@ -677,6 +690,9 @@ describe("popup with multiple pages", () => {
     console.log = jest.fn();
     mockMessageReturnValue(API.EXISTS_CONFIG, undefined, true);
     mockMessageReturnValue(API.GET_DATA, undefined, multipleChids);
+
+    // Add implementation to return value for any i18n.getMessage call
+    mockAnyi18nMessage();
   });
 
   /* ------------------------------------------------------------------------ */

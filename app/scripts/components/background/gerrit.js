@@ -40,6 +40,35 @@ const gerrit = {
 
     return change;
   },
+
+  /* ------------------------------------------------------------------------ */
+
+  async test(endpoint, credentials) {
+    const url = `${endpoint}/config/server/version`;
+
+    let result = false;
+    try {
+      result = await axios
+        .get(
+          url,
+          {},
+          {
+            auth: {
+              username: credentials.email,
+              password: credentials.password,
+            },
+          }
+        )
+        .then((response) => (response.status == 200 ? true : false));
+    } catch (err) {
+      console.log("Error testing endpoint:", endpoint);
+      if (err.response !== undefined) {
+        console.log("err code:", err.response.status);
+      }
+    }
+
+    return result;
+  },
 };
 
 /* --------------------- Get summarized value for label --------------------- */

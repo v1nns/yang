@@ -70,5 +70,25 @@
   "optionsMessageTestFailed": {
     "message": "FAIL! Gerrit API is not working, verify your configuration...",
     "description": "The title of the gerrit message for test fail"
+  },
+  "popupTableEmptySettingsTitle": {
+    "message": "Empty Settings",
+    "description": "The title of the table title message for empty settings"
+  },
+  "popupTableEmptySettingsSubtitle": {
+    "message": "Setup configuration settings before adding a Change-Id.",
+    "description": "The title of the table subtitle message for empty settings"
+  },
+  "popupTableEmptyDataTitle": {
+    "message": "Empty Data",
+    "description": "The title of the table title message for empty data"
+  },
+  "popupTableEmptyDataSubtitle": {
+    "message": "Add a Change-Id and it will show up here.",
+    "description": "The title of the table subtitle message for empty data"
+  },
+  "backgroundMessageNotification": {
+    "message": "Updated % Change-Id",
+    "description": "The title of the background message used for notification"
   }
 }

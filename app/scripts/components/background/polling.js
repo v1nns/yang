@@ -41,8 +41,6 @@ const polling = {
         changes[index] = result;
         updated.push({ ...result, updated: true });
       }
-
-      // TODO: add some sleep here?
     }
 
     if (restart) {
@@ -72,10 +70,12 @@ const polling = {
         // distinguish it when popup is opened
         await Storage.saveUpdatedChanges(updated);
 
-        // TODO: use dictionary here
-        const message = `Updated ${updated.length} Change-Id${
-          updated.length > 1 ? "s" : ""
-        }`;
+        // Build message for notification
+        const title = browser.i18n.getMessage("appName");
+        const rawMsg = browser.i18n.getMessage("backgroundMessageNotification");
+        const message =
+          rawMsg.replace("%", updated.length.toString()) +
+          (updated.length > 1 ? "s" : "");
 
         console.log(message);
 
@@ -89,7 +89,7 @@ const polling = {
           type: "basic",
           priority: 1,
           iconUrl: browser.runtime.getURL("images/icon-128.png"),
-          title: "Yet Another Notifier for Gerrit",
+          title: title,
           message: message,
         });
       }

@@ -4,6 +4,7 @@ import {
   expectMessage,
   expectStorageSave,
   expectOpenNewPage,
+  mockAnyi18nMessage,
   mockStorageValue,
   mockStorageValueOnce,
   mockResolvedAxiosGetOnce,
@@ -384,6 +385,9 @@ describe("polling service running with popup closed", () => {
 
     mockStorageValue("options", JSON.stringify(config));
     mockPopupState(false);
+
+    // Add implementation to return value for any i18n.getMessage call
+    mockAnyi18nMessage();
   });
 
   afterAll(() => {

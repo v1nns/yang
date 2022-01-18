@@ -141,3 +141,22 @@ export function mockRejectedAxiosGetOnce(url, options, result) {
     )
     .mockRejectedValueOnce({ response: result });
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                   Utility                                  */
+/* -------------------------------------------------------------------------- */
+
+export function toLabelName(value) {
+  switch (value) {
+    case -2:
+      return "neg2";
+    case -1:
+      return "neg1";
+    case 1:
+      return "plus1";
+    case 2:
+      return "plus2";
+    default:
+      return "zero";
+  }
+}

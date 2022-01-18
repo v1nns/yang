@@ -120,12 +120,11 @@ const EmptyData = (emptyConfig) => {
   let title = "",
     subtitle = "";
   if (emptyConfig) {
-    // TODO: use dictionary here
-    title = "Empty Settings";
-    subtitle = "Setup configuration settings before adding a Change-Id.";
+    title = browser.i18n.getMessage("popupTableEmptySettingsTitle");
+    subtitle = browser.i18n.getMessage("popupTableEmptySettingsSubtitle");
   } else {
-    title = "Empty Data";
-    subtitle = "Add a Change-Id and it will show up here.";
+    title = browser.i18n.getMessage("popupTableEmptyDataTitle");
+    subtitle = browser.i18n.getMessage("popupTableEmptyDataSubtitle");
   }
 
   return (
@@ -271,15 +270,15 @@ const EditableCell = ({ row, index, column, col, onChange, onKeyDown }) => {
 const Label = ({ value }) => {
   switch (value) {
     case -2:
-      return <Neg2 fontSize="small" />;
+      return <Neg2 fontSize="small" aria-label="neg2" />;
     case -1:
-      return <Neg1 fontSize="small" />;
+      return <Neg1 fontSize="small" aria-label="neg1" />;
     case 1:
-      return <Plus1 fontSize="small" />;
+      return <Plus1 fontSize="small" aria-label="plus1" />;
     case 2:
-      return <Plus2 fontSize="small" />;
+      return <Plus2 fontSize="small" aria-label="plus2" />;
     default:
-      return <Zero fontSize="small" />;
+      return <Zero fontSize="small" aria-label="zero" />;
   }
 };
 
@@ -512,7 +511,6 @@ function ChidTable({
   /* --------------------------- Load initial data -------------------------- */
 
   useEffect(() => {
-    // TODO: maybe add some loading animation ?
     if (chids.length > 0) {
       setData([...chids]);
 
