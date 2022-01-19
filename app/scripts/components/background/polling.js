@@ -37,7 +37,15 @@ const polling = {
 
       const result = await Gerrit.query(options, elem.id);
 
-      if (result.error || !isEqual(elem, result)) {
+      // During the development, sometimes the HTTP Get request was failing with
+      // error "net::ERR_CONNECTION_CLOSED". Maybe this result.error matches
+      // this situation, so in this case, only remove Change-Id from Storage if
+      // it has no information from previous queries. Otherwise, only update it
+      // if change has been updated without the error flag set
+      if (
+        (result.error && Storage.isChangeEmpty(elem)) ||
+        (result.error === undefined && !isEqual(elem, result))
+      ) {
         changes[index] = result;
         updated.push({ ...result, updated: true });
       }

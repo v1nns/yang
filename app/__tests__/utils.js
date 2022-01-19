@@ -56,6 +56,14 @@ export function expectCreateNotification(changesUpdated) {
   );
 }
 
+export function clearAnyExpectation() {
+  browser.runtime.sendMessage.mockClear();
+  browser.storage.local.set.mockClear();
+  browser.tabs.create.mockClear();
+  browser.browserAction.setBadgeText.mockClear();
+  browser.notifications.create.mockClear();
+}
+
 /* -------------------------------------------------------------------------- */
 /*                             Mock Initialization                            */
 /* -------------------------------------------------------------------------- */

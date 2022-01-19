@@ -1,6 +1,8 @@
 import API from "../scripts/api";
 
 import {
+  clearAnyExpectation,
+  expectCreateNotification,
   expectMessage,
   expectStorageSave,
   expectOpenNewPage,
@@ -12,7 +14,6 @@ import {
   mockPopupState,
   initNotificationMock,
   destroyNotificationMock,
-  expectCreateNotification,
 } from "./utils";
 
 import {
@@ -395,6 +396,7 @@ describe("polling service running with popup closed", () => {
   });
 
   beforeEach(() => {
+    clearAnyExpectation();
     mockRestart.mockClear();
     mockStop.mockClear();
   });
@@ -404,7 +406,7 @@ describe("polling service running with popup closed", () => {
   test("query a single change-id with both labels approved and merged status", async () => {
     // Mock storage to return a single change-id
     const chid = chids[0];
-    mockStorageValue("changes", JSON.stringify([chid]));
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
 
     // Create a mock for HTTP get response
     const url = `${config.endpoint}/changes/${chid.id}/detail`;
@@ -451,7 +453,7 @@ describe("polling service running with popup closed", () => {
   test("query a single change-id with codeReview rejected", async () => {
     // Mock storage to return a single change-id
     const chid = chids[0];
-    mockStorageValue("changes", JSON.stringify([chid]));
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
 
     // Create a mock for HTTP get response
     const url = `${config.endpoint}/changes/${chid.id}/detail`;
@@ -498,7 +500,7 @@ describe("polling service running with popup closed", () => {
   test("query a single change-id with verify rejected", async () => {
     // Mock storage to return a single change-id
     const chid = chids[0];
-    mockStorageValue("changes", JSON.stringify([chid]));
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
 
     // Create a mock for HTTP get response
     const url = `${config.endpoint}/changes/${chid.id}/detail`;
@@ -545,7 +547,7 @@ describe("polling service running with popup closed", () => {
   test("query a single change-id with both labels rejected", async () => {
     // Mock storage to return a single change-id
     const chid = chids[0];
-    mockStorageValue("changes", JSON.stringify([chid]));
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
 
     // Create a mock for HTTP get response
     const url = `${config.endpoint}/changes/${chid.id}/detail`;
@@ -591,7 +593,7 @@ describe("polling service running with popup closed", () => {
 
   test("run service, query existent change-ids and get merged status", async () => {
     // Mock storage to return a list of change-ids
-    mockStorageValue("changes", JSON.stringify(chids));
+    mockStorageValueOnce("changes", JSON.stringify(chids));
 
     // Create a mock for every HTTP get response
     for (const chid of chids) {
@@ -651,6 +653,62 @@ describe("polling service running with popup closed", () => {
     expect(mockRestart).not.toBeCalled();
     expect(mockStop).toBeCalled();
   });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query a single change-id for the first time with error", async () => {
+    // Mock storage to return a single change-id empty
+    const chid = { id: "123123", verified: 0, codeReview: 0 };
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response with error
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    mockRejectedAxiosGetOnce(url, config, {
+      status: 500,
+      err: "Some crazy error has occurred!",
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [];
+    const updated = [{ id: chid.id, error: true, updated: true }];
+
+    // Create expectations
+    expectStorageSave({ changes: JSON.stringify(changes) });
+    expectStorageSave({ updated: JSON.stringify(updated) });
+
+    expectCreateNotification(1);
+
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).toBeCalled();
+  });
+
+  /* ------------------------------------------------------------------------ */
+
+  test("query an existent change-id with error", async () => {
+    // Mock storage to return a single change-id empty
+    const chid = chids[0];
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
+
+    // Create a mock for HTTP get response with error
+    const url = `${config.endpoint}/changes/${chid.id}/detail`;
+    mockRejectedAxiosGetOnce(url, config, {
+      status: 401,
+      err: "You are not authorized",
+    });
+
+    await Service.run(restart, mockRestart, mockStop);
+
+    // Create expectation for change-ids and updated
+    const changes = [chid];
+    const updated = [{ id: chid.id, error: true, updated: true }];
+
+    // Create expectations
+    expect(browser.storage.local.set).not.toBeCalled();
+    expect(mockRestart).not.toBeCalled();
+    expect(mockStop).not.toBeCalled();
+  });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -675,6 +733,7 @@ describe("polling service running with popup opened", () => {
   });
 
   beforeEach(() => {
+    clearAnyExpectation();
     mockRestart.mockClear();
     mockStop.mockClear();
   });
@@ -684,7 +743,7 @@ describe("polling service running with popup opened", () => {
   test("query a single change-id with both labels approved and merged status", async () => {
     // Mock storage to return a single change-id
     const chid = chids[0];
-    mockStorageValue("changes", JSON.stringify([chid]));
+    mockStorageValueOnce("changes", JSON.stringify([chid]));
 
     // Create a mock for HTTP get response
     const url = `${config.endpoint}/changes/${chid.id}/detail`;

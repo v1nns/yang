@@ -7,7 +7,7 @@ from Gerrit.
 
 *This is a work in progress*.
 
-## Usage
+## Installation
 
 Currently, this browser extension is **not** published in any store yet. So, if
 you want to use, must install it manually. It is possible to download the

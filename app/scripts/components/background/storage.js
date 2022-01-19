@@ -73,6 +73,15 @@ const storage = {
 
     return existsConfig;
   },
+
+  /* ------------------------------------------------------------------------ */
+
+  isChangeEmpty(elem) {
+    if (elem.subject !== undefined && elem.status !== undefined) {
+      return false;
+    }
+    return true;
+  },
 };
 
 export default storage;

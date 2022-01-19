@@ -110,7 +110,7 @@ function filterLabel(items) {
 /* ----------- Convert JSON object from REST API to custom object ----------- */
 
 function convertGerritData(raw) {
-  const change = pick(raw, ["subject", "status"]);
+  let change = pick(raw, ["subject", "status"]);
   change.id = raw._number.toString();
   change.verified = 0;
   change.codeReview = 0;
