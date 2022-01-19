@@ -1,4 +1,4 @@
-# YANG (Yet Another Notifier ~~for~~ Gerrit)
+# Yet Another Notifier ~~for~~ Gerrit (YANG)
 
 An open-source browser extension to receive update notifications for Change-Ids
 from Gerrit.
@@ -47,8 +47,8 @@ npm run build <browser>
 
 ## Work In Progress
 
+- [ ] Generate the first release
 - [ ] Use a standard font globally
 - [ ] Publishing
-    - [ ] Remove field "browser_specific_settings" from Manifest
     - [ ] Chrome Web Store
     - [ ] Firefox Browser Addons

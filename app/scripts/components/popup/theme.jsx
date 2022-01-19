@@ -76,6 +76,7 @@ const ThemeDark = {
 /* -------------------------------------------------------------------------- */
 
 const ThemeLight = {
+  background: "rgb(255, 255, 255)",
   foreground: "rgba(0, 0, 0, 0.5)",
   appbar: {
     first: "rgb(52, 125, 190)",

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import { isEmpty } from "lodash";
 
-import { ThemeDark } from "./theme";
+import { ThemeDark, ThemeLight } from "./theme";
 
 import AppBar from "./appbar";
 import ChidTable from "./table";
@@ -62,6 +62,18 @@ function Popup({ isTesting }) {
   };
 
   /* ------------------------------------------------------------------------ */
+  /*                            Theme Configuration                           */
+  /* ------------------------------------------------------------------------ */
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [darkMode]);
+
+  /* ------------------------------------------------------------------------ */
   /*                                 Handlers                                 */
   /* ------------------------------------------------------------------------ */
 
@@ -98,7 +110,9 @@ function Popup({ isTesting }) {
       aria-label="popup"
       style={{
         height: "100%",
-        ...(darkMode && { backgroundColor: ThemeDark.background }),
+        ...(darkMode
+          ? { backgroundColor: ThemeDark.background }
+          : { backgroundColor: ThemeLight.background }),
       }}
     >
       <AppBar

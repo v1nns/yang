@@ -18,5 +18,7 @@ undesirable flickering effect in the UI =( */
 
 /* remove any margin from html body */
 body {
+  padding: 0 !important;
   margin: 0px !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
 }
