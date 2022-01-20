@@ -1,8 +1,7 @@
-Yet Another Notifier ~~for~~ Gerrit (YANG)
+# Yet Another Notifier ~~for~~ Gerrit (YANG)
 ![tests](https://github.com/v1nns/yang/actions/workflows/test.js.yml/badge.svg)
 ![coverage](https://github.com/v1nns/yang/actions/workflows/coverage.js.yml/badge.svg)
 ![lint](https://github.com/v1nns/yang/actions/workflows/lint.js.yml/badge.svg)
-====
 
 An open-source browser extension to receive update notifications about
 Change-Ids from Gerrit. The main motivation behind this project is to decrease
