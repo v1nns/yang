@@ -1,6 +1,6 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run code coverage
+# This workflow will do a clean installation of node dependencies and run a lint check
 
-name: coverage
+name: lint
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
     branches: [ main ]
 
 jobs:
-  coverage:
+  eslint:
 
     runs-on: ubuntu-latest
 
@@ -26,5 +26,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - name: Run code coverage analysis
-      run: npm run coverage
+    - name: Run ESLint
+      run: npm run lint

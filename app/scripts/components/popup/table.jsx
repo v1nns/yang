@@ -506,7 +506,7 @@ function ChidTable({
   const [disableActions, setDisableActions] = useState(false);
 
   // Timeout to show animation/transition
-  const animationTimeout = isTesting ? 50 : 2000;
+  const animationTimeout = isTesting ? 200 : 2000;
 
   /* --------------------------- Load initial data -------------------------- */
 
