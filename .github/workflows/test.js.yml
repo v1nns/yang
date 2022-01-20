@@ -5,8 +5,20 @@ name: tests
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.js'
+      - '**.jsx'
+      - '**.json'
+      - '**.html'
+      - '**.css'
   pull_request:
     branches: [ main ]
+    paths:
+      - '**.js'
+      - '**.jsx'
+      - '**.json'
+      - '**.html'
+      - '**.css'
 
 jobs:
   test:
