@@ -1,9 +1,9 @@
 # Yet Another Notifier ~~for~~ Gerrit (YANG)
 
-An open-source browser extension to receive update notifications for Change-Ids
-from Gerrit.
+An open-source browser extension to receive update notifications about
+Change-Ids from Gerrit.
 
-[INSERT GIF HERE TO SHOW THE POPUP WORKING]
+![](screenshot/first-release.gif?raw=true)
 
 *This is a work in progress*.
 

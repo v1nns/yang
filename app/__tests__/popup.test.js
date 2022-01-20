@@ -80,7 +80,7 @@ describe("popup with no change-ids", () => {
     expect(tableInfo).toHaveLength(2);
     expect(tableInfo[0]).toHaveTextContent("Empty Settings");
     expect(tableInfo[1]).toHaveTextContent(
-      "Setup configuration settings before adding a Change-Id."
+      "Before you can add a Change-Id, you need to configure Gerrit."
     );
   });
 
@@ -109,9 +109,7 @@ describe("popup with no change-ids", () => {
     // Table info must show message about empty data
     expect(tableInfo).toHaveLength(2);
     expect(tableInfo[0]).toHaveTextContent("Empty Data");
-    expect(tableInfo[1]).toHaveTextContent(
-      "Add a Change-Id and it will show up here."
-    );
+    expect(tableInfo[1]).toHaveTextContent("Add new Change-Id to show here.");
   });
 });
 
@@ -339,9 +337,7 @@ describe("popup with change-ids", () => {
     // Table info must show message about empty data
     expect(tableInfo).toHaveLength(2);
     expect(tableInfo[0]).toHaveTextContent("Empty Data");
-    expect(tableInfo[1]).toHaveTextContent(
-      "Add a Change-Id and it will show up here."
-    );
+    expect(tableInfo[1]).toHaveTextContent("Add new Change-Id to show here.");
   });
 
   /* ------------------------------------------------------------------------ */

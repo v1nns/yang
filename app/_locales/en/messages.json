@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "Receive update notifications from Gerrit change-ids.",
+    "message": "Receive notifications about Change-Ids from Gerrit.",
     "description": "The description of the application"
   },
   "browserActionTitle": {
@@ -76,7 +76,7 @@
     "description": "The title of the table title message for empty settings"
   },
   "popupTableEmptySettingsSubtitle": {
-    "message": "Setup configuration settings before adding a Change-Id.",
+    "message": "Before you can add a Change-Id, you need to configure Gerrit.",
     "description": "The title of the table subtitle message for empty settings"
   },
   "popupTableEmptyDataTitle": {
@@ -84,7 +84,7 @@
     "description": "The title of the table title message for empty data"
   },
   "popupTableEmptyDataSubtitle": {
-    "message": "Add a Change-Id and it will show up here.",
+    "message": "Add new Change-Id to show here.",
     "description": "The title of the table subtitle message for empty data"
   },
   "backgroundMessageNotification": {

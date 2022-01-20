@@ -54,8 +54,8 @@ const ThemeDark = {
   foreground: "rgb(223, 226, 229)",
   row: "rgb(168, 181, 194)",
   appbar: {
-    first: "rgb(45, 51, 59)",
-    last: "rgb(65, 71, 79)",
+    first: "rgb(28, 27, 34)",
+    last: "rgb(41, 40, 47)",
   },
   table: {
     border: "rgb(66, 65, 77)",

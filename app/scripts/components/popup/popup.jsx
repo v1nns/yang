@@ -98,7 +98,9 @@ function Popup({ isTesting }) {
   };
 
   const handleDoubleClickChange = (row) => {
-    browser.runtime.sendMessage({ type: API.OPEN_CHANGE, data: row.id });
+    if (row.id !== 0) {
+      browser.runtime.sendMessage({ type: API.OPEN_CHANGE, data: row.id });
+    }
   };
 
   /* ------------------------------------------------------------------------ */
