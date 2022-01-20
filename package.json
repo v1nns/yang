@@ -6,6 +6,7 @@
     "dev": "webextension-toolbox dev",
     "build": "webextension-toolbox build",
     "test": "jest --env=jsdom",
+    "coverage": "jest --env=jsdom --coverage",
     "lint": "eslint ./app/scripts/ --ext .js,.jsx"
   },
   "devDependencies": {

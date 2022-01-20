@@ -1,5 +1,6 @@
 Yet Another Notifier ~~for~~ Gerrit (YANG)
-![Tests](https://github.com/v1nns/yang/actions/workflows/test.js.yml/badge.svg)
+![tests](https://github.com/v1nns/yang/actions/workflows/test.js.yml/badge.svg)
+![coverage](https://github.com/v1nns/yang/actions/workflows/coverage.js.yml/badge.svg)
 ====
 
 An open-source browser extension to receive update notifications about
