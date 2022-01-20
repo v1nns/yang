@@ -58,13 +58,13 @@ npm run build <browser>
 
 ## Work In Progress
 
+- [x] Build the first release
 - [ ] Improve theme
   - [ ] Use a standard font globally
   - [ ] Add Dark theme for Options page
   - [ ] Move remaining shared components from Popup to Theme
 - [ ] Options page
   - [ ] Improve validation for settings
-- [x] Build the first release
 - [ ] Publishing
   - [ ] Chrome Web Store
   - [ ] Firefox Browser Addons
