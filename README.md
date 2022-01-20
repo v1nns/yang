@@ -39,7 +39,9 @@ This extension was developed using [WebExtension
 Toolbox](https://github.com/webextension-toolbox/webextension-toolbox/) (it
 makes easier to develop a cross-browser extension).
 
-[TALK ABOUT TOOLS]: React, Jest, ESLint
+To build the user interface components, React has been chosen due to its
+usability and community support. For the same reasons, Jest is used as the
+testing framework for this project.
 
 ### Quick Start
 
