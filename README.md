@@ -3,9 +3,12 @@
 An open-source browser extension to receive update notifications about
 Change-Ids from Gerrit.
 
-![](screenshot/first-release.gif?raw=true)
-
-*This is a work in progress*.
+<p align="center">
+    <img src="screenshot/first-release.gif">
+</p>
+<p align="center">
+    <em><i>See how easy it is to use. :sunglasses:</i></em>
+</p>
 
 ## Installation
 
@@ -50,5 +53,5 @@ npm run build <browser>
 - [ ] Generate the first release
 - [ ] Use a standard font globally
 - [ ] Publishing
-    - [ ] Chrome Web Store
-    - [ ] Firefox Browser Addons
+  - [ ] Chrome Web Store
+  - [ ] Firefox Browser Addons
