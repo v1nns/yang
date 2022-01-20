@@ -64,7 +64,7 @@ npm run build <browser>
   - [ ] Move remaining shared components from Popup to Theme
 - [ ] Options page
   - [ ] Improve validation for settings
-- [ ] Build the first release
+- [x] Build the first release
 - [ ] Publishing
   - [ ] Chrome Web Store
   - [ ] Firefox Browser Addons
