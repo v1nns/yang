@@ -1,6 +1,6 @@
 {
   "name": "yet-another-notifier-for-gerrit",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Receive update notifications from Gerrit change-ids.",
   "scripts": {
     "dev": "webextension-toolbox dev",
@@ -8,6 +8,10 @@
     "test": "jest --env=jsdom",
     "coverage": "jest --env=jsdom --coverage",
     "lint": "eslint ./app/scripts/ --ext .js,.jsx"
+  },
+  "engines": {
+      "node": ">=16.13.2",
+      "npm": ">=7.22.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.16.4",
