@@ -1,10 +1,10 @@
 {
   "name": "yet-another-notifier-for-gerrit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Receive update notifications from Gerrit change-ids.",
   "scripts": {
-    "dev": "webextension-toolbox dev",
-    "build": "webextension-toolbox build",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider webextension-toolbox dev",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webextension-toolbox build",
     "test": "jest --env=jsdom",
     "coverage": "jest --env=jsdom --coverage",
     "lint": "eslint ./app/scripts/ --ext .js,.jsx"
